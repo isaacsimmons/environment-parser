@@ -1,3 +1,4 @@
+import { assert } from 'console';
 import {
   FALSE_VALUES,
   TRUE_VALUES,
@@ -9,6 +10,7 @@ import {
   validateIntValue,
   restrictValues,
   stringValidator,
+  validateBase64String,
 } from './validators';
 
 const intStrings = ['1000', '-1000', '+1000', '0', '+0', '-0'];
@@ -72,4 +74,9 @@ test('restricted values validator', () => {
 
   odds.forEach(assertOdd);
   evens.forEach(even => expect(() => assertOdd(even)).toThrow());
+});
+
+test('base64 tester', () => {
+  ['1qAZ2WSx3EDc++++', 'QWERTY==', 'ASD=', '/A=='].forEach(validateBase64String);
+  ['x', 'ABCDE===', '1!qw', '1Qa', 'aeiou=='].forEach(bad64 => expect(() => validateBase64String(bad64)).toThrow());
 });

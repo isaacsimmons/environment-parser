@@ -37,6 +37,12 @@ export const validateFloatValue = (n: number): void => {
   }
 };
 
+export const validateBase64String = (s: string): void => {
+  if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(s)) {
+    throw new Error('Invalid base64 string: ' + s);
+  }
+};
+
 export const restrictValues = <T>(values: T[]) => (value: T): void => {
   if (!values.includes(value)) {
     throw new Error(`Invalid value: ${value}`);
