@@ -62,3 +62,6 @@ export const getPort = (options: BasicFieldOptions<number> = {}): FieldOptions<n
 
 export const getUrl = (options: BasicFieldOptions<URL> = {}): FieldOptions<URL> =>
   ({parser: s => new URL(s), ...options});
+
+export const getJson = (options: BasicFieldOptions<any> = {}): FieldOptions<any> =>
+  ({parser: s => JSON.parse(s), ...options});
