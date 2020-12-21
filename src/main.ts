@@ -16,7 +16,7 @@ export interface BasicFieldOptions<T> {
   validateRaw?: Array<(value: string) => void>;
   validateParsed?: Array<(value: T) => void>;
   trim?: TrimValue;
-//  lazy?: boolean;  //TODO: support for individual lazy fields?
+  lazy?: boolean;
 }
 
 export interface FieldOptions<T> extends BasicFieldOptions<T> {
@@ -121,19 +121,22 @@ const bindAllReaders = <T extends SettingsConfig>(
     return parsedValue;
   };
 
-  const boundEntries = Object.entries(config).map(([configKey, fieldOptions]) => ([configKey, bindEntry(configKey, fieldOptions)]));
+  const boundEntries = Object.entries(config).map(([configKey, fieldOptions]) => {
+    const reader = bindEntry(configKey, fieldOptions);
+    // TODO: an environment level override to force all values to be lazy (for testing)
+    const lazy = fieldOptions.lazy ?? globalOptions.lazy ?? false;
+    if (!lazy) {
+      // Invoke it immediately and re-wrap in a new thunk if not lazy
+      const value = reader();
+      return [configKey, () => value];
+    }
+    return [configKey, reader];
+  });
   return Object.fromEntries(boundEntries) as {[key in keyof T]: () => ReturnType<T[key]['parser']>};
 };
 
 export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: ReturnType<T[key]['parser']>} => {
   const readers = bindAllReaders(config, options);
-
-  // TODO: an environment level override to force all values to be lazy (for testing)
-
-  // Invoke them all immediately and return the resulting object
-  if (!options.lazy) {
-    return Object.fromEntries(Object.entries(readers).map(([key, value]) => [key, value()])) as {[key in keyof T]: ReturnType<T[key]['parser']>};
-  }
 
   // Wrap the readers in a proxy object to transparently invoke them when accessed for the first time
   const cache: Partial<{[key in keyof T]: ReturnType<T[key]['parser']>}> = {};

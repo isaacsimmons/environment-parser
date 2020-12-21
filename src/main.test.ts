@@ -50,17 +50,17 @@ test('lazy settings don\'t throw when not accessed', () => {
   });
 });
 
-// test('individual lazy settings don\'t throw when not accessed', () => {
-//   withConfigOverrides(overrides, () => {
-//     const settings = Settings({
-//       TEST_1: getInt(),
-//       TEST_2: getString(),
-//       TEST_3: getBool({lazy: true}),
-//     }, {lazy: false});
-//     expect(settings.TEST_1).toEqual(3);
-//     expect(settings.TEST_2).toEqual('foo');
-//   });
-// });
+test('individual lazy settings don\'t throw when not accessed', () => {
+  withConfigOverrides(overrides, () => {
+    const settings = Settings({
+      TEST_1: getInt(),
+      TEST_2: getString(),
+      TEST_3: getBool({lazy: true}),
+    }, {lazy: false});
+    expect(settings.TEST_1).toEqual(3);
+    expect(settings.TEST_2).toEqual('foo');
+  });
+});
 
 test('lazy settings throws when missing value accessed', () => {
   expect(() => {
