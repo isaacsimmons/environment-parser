@@ -46,8 +46,7 @@ const trimValue = (value: string|undefined, trim: TrimValue): string|undefined =
     if (value === value.trim()) {
       return value;
     }
-    // FIXME: throw better error? or try/catch this and re-wrap a level up
-    throw new ConfigError(`Illegal whitespace on config value for ${'envName'}: "${value}"`);
+    throw new ConfigError(`Illegal whitespace on config value: "${value}"`);
   }
 };
 
@@ -80,7 +79,7 @@ const bindAllReaders = <T extends SettingsConfig>(
     try {
       trimmedValue = trimValue(rawValue, fieldOptions.trim ?? globalOptions.trim ?? true);
     } catch (err) {
-      // rethrow with a message containing envKey
+      throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
 
     // TODO: a field-level option to allow null returns? (but I'd need to bake that into the return type of the parse function to be hinted properly)

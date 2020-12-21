@@ -69,12 +69,11 @@ test('lazy settings throws when missing value accessed', () => {
         TEST_1: getInt(),
         TEST_2: getString(),
         TEST_3: getBool(),
-      }, {lazy: false});
-      // FIXME: better way to access this without "doing" anything with it
-      console.log(settings.TEST_3);
+      }, {lazy: true});
+      // Just access the value without doing anything to it
+      settings.TEST_3;
     });
   }).toThrow();
-
 });
 
 test('key rename test', () => {
