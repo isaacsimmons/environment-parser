@@ -10,18 +10,28 @@ export interface GlobalOptions {
   lazy?: boolean;
 }
 
-export interface BasicFieldOptions<T> {
+export interface BasicOptionalFieldOptions<T> {
   envName?: string;
-  defaultValue?: T;
   validateRaw?: Array<(value: string) => void>;
   validateParsed?: Array<(value: T) => void>;
   trim?: TrimValue;
   lazy?: boolean;
 }
 
-export interface FieldOptions<T> extends BasicFieldOptions<T> {
-  parser: (stringValue: string) => T;
+// TODO: is it worth it to have this extra type just to prevent an "optional" parser from being paired with a default value?
+export interface BasicRequiredFieldOptions<T> extends BasicOptionalFieldOptions<T> {
+  defaultValue?: T;
 }
+
+export interface RequiredFieldOptions<T> extends BasicRequiredFieldOptions<T> {
+  parser: (stringValue: string|undefined) => T;
+}
+
+export interface OptionalFieldOptions<T> extends BasicOptionalFieldOptions<T> {
+  parser: (stringValue: string|undefined) => T | undefined;
+}
+
+type FieldOptions<T> = RequiredFieldOptions<T> | OptionalFieldOptions<T>;
 
 export interface SettingsConfig {
   [key: string]: FieldOptions<any>;
@@ -81,28 +91,29 @@ const bindAllReaders = <T extends SettingsConfig>(
     } catch (err) {
       throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
+    // lump together emptystring and undefined
+    if (trimmedValue !== undefined && trimmedValue.length === 0) {
+      trimmedValue = undefined;
+    }
 
-    // TODO: a field-level option to allow null returns? (but I'd need to bake that into the return type of the parse function to be hinted properly)
-
-    // Check for default and throw if missing with no default
-    if (trimmedValue === undefined || trimmedValue === '') {
-      if (fieldOptions.defaultValue !== undefined) {
-        return fieldOptions.defaultValue;
-      }
-      throw new ConfigError(`Missing required config value: ${envKey}`);
+    // If no value was found and we have a default, return that
+    if (trimmedValue === undefined && 'defaultValue' in fieldOptions && fieldOptions.defaultValue !== undefined) {
+      return fieldOptions.defaultValue;
     }
 
     // Validate the string before parsing
-    try {
-      for (const validateRaw of fieldOptions.validateRaw ?? []) {
-        validateRaw(trimmedValue);
+    if (trimmedValue !== undefined) {
+      try {
+        for (const validateRaw of fieldOptions.validateRaw ?? []) {
+          validateRaw(trimmedValue);
+        }
+      } catch (err) {
+        throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
       }
-    } catch (err) {
-      throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
 
     // Parse the string into the final value
-    let parsedValue: F;
+    let parsedValue: F | undefined;
     try {
       parsedValue = fieldOptions.parser(trimmedValue);
     } catch (err) {
@@ -110,12 +121,14 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the post-parsing result as well
-    try {
-      for (const validateParsed of fieldOptions.validateParsed ?? []) {
-        validateParsed(parsedValue);
+    if (parsedValue !== undefined) {
+      try {
+        for (const validateParsed of fieldOptions.validateParsed ?? []) {
+          validateParsed(parsedValue);
+        }
+      } catch (err) {
+        throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
       }
-    } catch (err) {
-      throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
     }
 
     return parsedValue;
