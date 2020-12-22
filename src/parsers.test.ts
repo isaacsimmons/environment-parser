@@ -1,15 +1,5 @@
 import { optionalBigInt, optionalBool, optionalFloat, optionalInt, optionalJson, optionalString, optionalUrl, requiredBigInt, requiredBool, requiredFloat, requiredInt, requiredJson, requiredString, requiredUrl } from './parsers';
 
-// const intStrings = ['1000', '-1000', '+1000', '0', '+0', '-0'];
-// const floatStrings = ['4.2', '.52', '0.78', '-.5', '+.5', '+3.14', '5.0', '-5.0', '+5.0'];
-
-// const badNumberStrings = ['', '.', '-.', '203,2', '123foo', 'One', 'Eleventy', '1/2', 'Inf', 'NaN', '10n', '0xFF', '3.2.2', '1,000', 'MCMLXXXIV'];
-
-// const ints = [0, -42, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
-// const floats = [2.5, -42.42, 3.24e30];
-// TODO: some bigint tests
-// const bigints = [9007199254740993n, -9007199254740993n, 0n, 42n, 999999999999999999999999999999999999n];
-
 test('optional parsers allow undefined', () => {
   expect(optionalInt(undefined)).toBeUndefined();
   expect(optionalFloat(undefined)).toBeUndefined();
@@ -36,5 +26,51 @@ test('int parser test', () => {
   expect(requiredInt('-42')).toEqual(-42);
   expect(requiredInt('0')).toEqual(0);
   expect(requiredInt('+0')).toEqual(0);
+  expect(requiredInt('9007199254740991')).toEqual(9007199254740991); // MAX_SAFE_INTEGER
   expect(requiredInt('-0') === 0).toBeTruthy();  // Sidestep the fact that expect 0 toEqual -0 fails
+});
+
+test('float parser test', () => {
+  expect(requiredFloat('42')).toEqual(42);
+  expect(requiredFloat('4.2')).toEqual(4.2);
+  expect(requiredFloat('-4.2')).toEqual(-4.2);
+  expect(requiredFloat('0.42')).toEqual(0.42);
+  expect(requiredFloat('.42')).toEqual(0.42);
+  expect(requiredFloat('-.42')).toEqual(-0.42);
+  expect(requiredFloat('3.0')).toEqual(3);
+  expect(requiredFloat('9007199254740991')).toEqual(9007199254740991); // MAX_SAFE_INTEGER
+});
+
+test('bigint parser test', () => {
+  expect(requiredBigInt('0')).toEqual(0n);
+  expect(requiredBigInt('9007199254740991')).toEqual(9007199254740991n);
+  expect(requiredBigInt('9007199254740993')).toEqual(9007199254740993n);
+  expect(requiredBigInt('-9000')).toEqual(-9000n);
+});
+
+test('bool parser test', () => {
+  expect(requiredBool('TRUE')).toEqual(true);
+  expect(requiredBool('1')).toEqual(true);
+  expect(requiredBool('FALSE')).toEqual(false);
+  expect(requiredBool('0')).toEqual(false);
+});
+
+test('json parser test', () => {
+  expect(requiredJson('{"foo": "bar"}')).toEqual({foo: 'bar'});
+  expect(requiredJson('[1,2,"a","b"]')).toEqual([1,2,'a','b']);
+  expect(requiredJson('"hello"')).toEqual('hello');
+  expect(requiredJson('77')).toEqual(77);
+});
+
+test('url parser test', () => {
+  const parsedUrl1 = requiredUrl('http://localhost:3000');
+  expect(parsedUrl1.protocol).toEqual('http:');
+  expect(parsedUrl1.hostname).toEqual('localhost');
+  expect(parsedUrl1.port).toEqual('3000');
+
+  const parsedUrl2 = requiredUrl('https://example.com/foo/bar?baz=qux');
+  expect(parsedUrl2.hostname).toEqual('example.com');
+  expect(parsedUrl2.protocol).toEqual('https:');
+  expect(parsedUrl2.pathname).toEqual('/foo/bar');
+  expect(parsedUrl2.search).toEqual('?baz=qux');
 });
