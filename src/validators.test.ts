@@ -1,4 +1,3 @@
-import { assert } from 'console';
 import {
   FALSE_VALUES,
   TRUE_VALUES,

@@ -15,6 +15,7 @@ export const clearConfigOverrides = (): void => {
   overrides = null;
 };
 
+// Warning: This probably won't do what you want if you pass it an an async callback fn
 export const withConfigOverrides = (values: ConfigOverrides, callback: () => unknown): void => {
   setConfigOverrides(values);
   try {

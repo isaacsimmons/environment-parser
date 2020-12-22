@@ -123,8 +123,8 @@ const bindAllReaders = <T extends SettingsConfig>(
 
   const boundEntries = Object.entries(config).map(([configKey, fieldOptions]) => {
     const reader = bindEntry(configKey, fieldOptions);
-    // TODO: an environment level override to force all values to be lazy (for testing)
-    const lazy = fieldOptions.lazy ?? globalOptions.lazy ?? false;
+    // FIXME: finalize that env var name, add to README
+    const lazy = process.env['MODULENAME_ALL_LAZY'] === '1' || (fieldOptions.lazy ?? globalOptions.lazy ?? false);
     if (!lazy) {
       // Invoke it immediately and re-wrap in a new thunk if not lazy
       const value = reader();
