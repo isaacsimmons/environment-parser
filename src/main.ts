@@ -23,6 +23,8 @@ export interface BasicRequiredFieldOptions<T> extends BasicOptionalFieldOptions<
   defaultValue?: T;
 }
 
+export type BasicFieldOptions<T> = BasicOptionalFieldOptions<T> | BasicRequiredFieldOptions<T>;
+
 export interface RequiredFieldOptions<T> extends BasicRequiredFieldOptions<T> {
   parser: (stringValue: string|undefined) => T;
 }
