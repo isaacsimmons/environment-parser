@@ -1,15 +1,17 @@
 {
-  "name": "ts-settings",
+  "name": "environment-parser",
   "version": "1.0.0",
-  "description": "Environment variable settings helper",
-  "main": "index.js",
+  "description": "Environment variable parser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "Isaac Simmons <isaac.simmons@gmail.com>",
   "license": "ISC",
   "private": false,
   "scripts": {
     "fix": "eslint src/*.ts --fix",
     "lint": "eslint src/*.ts",
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/node": "^14.14.13",

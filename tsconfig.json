@@ -4,6 +4,9 @@
     "lib": ["ESNEXT"],
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "declaration": true
+  },
+  "exclude": ["dist", "node_modules"]
 }
