@@ -154,7 +154,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 };
 
 let cacheEpoch = 0;
-export const clearEnvironnentCache = () => { cacheEpoch++; };
+export const clearEnvironnentCache = (): void => { cacheEpoch++; };
 
 export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: ReturnType<T[key]['parser']>} => {
   const readers = bindAllReaders(config, options);
