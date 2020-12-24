@@ -1,13 +1,17 @@
 import { BuiltInCapitalizationStyle, fixCapitalization } from './capitalization';
 import { ConfigError } from './error';
-import { readEnvValue } from './overrides';
 
 // TODO: standardize language -- Settings vs. Config, envKey vs envProp vs etc
+
+export interface ConfigOverrides {
+  [envKey: string]: string;
+}
 
 export interface GlobalOptions {
   envStyle?: CapitalizationStyle;
   trim?: TrimValue;
   lazy?: boolean;
+  overrides?: ConfigOverrides;
 }
 
 export interface BasicOptionalFieldOptions<T> {
@@ -84,7 +88,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 ): {[key in keyof T]: () => ReturnType<T[key]['parser']>} => {
   const bindEntry = <F>(configKey: string, fieldOptions: FieldOptions<F>) => () => {
     const envKey = getEnvKey(configKey, fieldOptions.envName, globalOptions.envStyle);
-    const rawValue = readEnvValue(envKey);
+    const rawValue = (globalOptions.overrides && globalOptions.overrides[envKey]) ?? process.env[envKey];
 
     // Optionally trim leading/trailing whitespace
     let trimmedValue: string|undefined;
@@ -141,26 +145,36 @@ const bindAllReaders = <T extends SettingsConfig>(
     // FIXME: finalize that env var name, add to README
     const lazy = process.env['MODULENAME_ALL_LAZY'] === '1' || (fieldOptions.lazy ?? globalOptions.lazy ?? false);
     if (!lazy) {
-      // Invoke it immediately and re-wrap in a new thunk if not lazy
-      const value = reader();
-      return [configKey, () => value];
+      // Invoke it immediately to force validation
+      reader();
     }
     return [configKey, reader];
   });
   return Object.fromEntries(boundEntries) as {[key in keyof T]: () => ReturnType<T[key]['parser']>};
 };
 
+let cacheEpoch = 0;
+export const clearEnvironnentCache = () => { cacheEpoch++; };
+
 export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: ReturnType<T[key]['parser']>} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them when accessed for the first time
-  const cache: Partial<{[key in keyof T]: ReturnType<T[key]['parser']>}> = {};
+  let cache: Partial<{[key in keyof T]: ReturnType<T[key]['parser']>}> = {};
+  let cacheVersion = cacheEpoch;
+
   const get = (target: {[key in keyof T]: () => ReturnType<T[key]['parser']>}, propertyKey: string & keyof T) => {
+    if (cacheVersion !== cacheEpoch) {
+      cacheVersion = cacheEpoch;
+      cache = {};
+    }
+
     if (!(propertyKey in cache)) {
       const fn = Reflect.get(target, propertyKey);
       const value = fn(propertyKey);
       cache[propertyKey] = value;
     }
+
     return cache[propertyKey];
   };
   return new Proxy(readers, { get }) as {[key in keyof T]: ReturnType<T[key]['parser']>};

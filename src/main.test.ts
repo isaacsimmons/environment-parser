@@ -1,22 +1,13 @@
 import { getBool, getString, requireBool, requireInt, requireString } from './getters';
-import { Settings } from './main';
-import { clearConfigOverrides, setConfigOverrides } from './overrides';
+import { clearEnvironnentCache, Settings } from './main';
 
 const overrides = { TEST_1: '3', TEST_2: 'foo' };
-
-beforeEach(() => {
-  setConfigOverrides(overrides);
-});
-
-afterEach(() => {
-  clearConfigOverrides();
-});
 
 test('basic eager settings test', () => {
   const settings = Settings({
     TEST_1: requireInt(),
     TEST_2: requireString({defaultValue: '123'}),
-  }, {lazy: false});
+  }, {lazy: false, overrides});
   expect(settings.TEST_1).toEqual(3);
   expect(settings.TEST_2).toEqual('foo');
 });
@@ -27,7 +18,7 @@ test('eager settings throw when missing required field', () => {
       TEST_1: requireInt(),
       TEST_2: getString(),
       TEST_3: requireBool(),
-    }, {lazy: false});
+    }, {lazy: false, overrides});
   }).toThrow();
 });
 
@@ -36,7 +27,7 @@ test('eager settings don\'t throw when missing optional field', () => {
     TEST_1: requireInt(),
     TEST_2: getString(),
     TEST_3: getBool(),
-  }, {lazy: false});
+  }, {lazy: false, overrides});
   expect(settings.TEST_3).toBeUndefined();
 });
 
@@ -44,7 +35,7 @@ test('basic lazy settings test', () => {
   const settings = Settings({
     TEST_1: requireInt(),
     TEST_2: getString(),
-  }, {lazy: true});
+  }, {lazy: true, overrides});
   expect(settings.TEST_1).toEqual(3);
   expect(settings.TEST_2).toEqual('foo');
 });
@@ -54,7 +45,7 @@ test('lazy settings don\'t throw when not accessed', () => {
     TEST_1: requireInt(),
     TEST_2: getString(),
     TEST_3: getBool(),
-  }, {lazy: true});
+  }, {lazy: true, overrides});
   expect(settings.TEST_1).toEqual(3);
   expect(settings.TEST_2).toEqual('foo');
 });
@@ -64,7 +55,7 @@ test('individual lazy settings don\'t throw when not accessed', () => {
     TEST_1: requireInt(),
     TEST_2: getString(),
     TEST_3: getBool({lazy: true}),
-  }, {lazy: false});
+  }, {lazy: false, overrides});
   expect(settings.TEST_1).toEqual(3);
   expect(settings.TEST_2).toEqual('foo');
 });
@@ -75,7 +66,7 @@ test('lazy settings throws when missing required value accessed', () => {
       TEST_1: requireInt(),
       TEST_2: getString(),
       TEST_3: requireBool(),
-    }, {lazy: true});
+    }, {lazy: true, overrides});
       // Just access the value without doing anything to it
     settings.TEST_3;
   }).toThrow();
@@ -86,7 +77,7 @@ test('lazy settings don\'t throw when missing optional value accessed', () => {
     TEST_1: requireInt(),
     TEST_2: getString(),
     TEST_3: getBool(),
-  }, {lazy: true});
+  }, {lazy: true, overrides});
   expect(settings.TEST_3).toBeUndefined();
 });
 
@@ -95,7 +86,7 @@ test('lazy settings don\'t throw when missing required value has default', () =>
     TEST_1: requireInt(),
     TEST_2: getString(),
     TEST_3: requireBool({defaultValue: true}),
-  }, {lazy: true});
+  }, {lazy: true, overrides});
   expect(settings.TEST_3).toEqual(true);
 });
 
@@ -103,7 +94,25 @@ test('key rename test', () => {
   const settings = Settings({
     test1: requireInt(),
     test2: getString(),
-  }, {lazy: false, envStyle: 'UPPER_SNAKE'});
+  }, {lazy: false, envStyle: 'UPPER_SNAKE', overrides});
   expect(settings.test1).toEqual(3);
   expect(settings.test2).toEqual('foo');
+});
+
+test('env values are cached', ()=> {
+  const OLD_ENV = process.env;
+  process.env = {...OLD_ENV};
+  process.env.TEST_1 = '3';
+  try {
+    const settings = Settings({ TEST_1: requireInt() });
+    expect(settings.TEST_1).toEqual(3);
+
+    process.env.TEST_1 = '4';
+    expect(settings.TEST_1).toEqual(3);
+
+    clearEnvironnentCache();
+    expect(settings.TEST_1).toEqual(4);
+  } finally {
+    process.env = OLD_ENV;
+  }
 });
