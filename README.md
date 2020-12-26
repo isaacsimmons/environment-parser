@@ -8,6 +8,7 @@ It can be used in JavaScript projects but is written in [typescript](https://www
 
 TODO: docs and examples
 
+`ENVIRONMENT_PARSER_ALL_LAZY`
 ## Requirements
 
 JS version? TS version?
@@ -27,3 +28,5 @@ Run `yarn lint` to check for lint errors, `yarn lint --fix` to attempt to auto-f
 Build artifacts (*.js, *.d.ts) can be compiled from the typescript sources with `yarn build`.
 They can be removed with `yarn clean`.
 // publish to NPM
+
+Semver? Releases?

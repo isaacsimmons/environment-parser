@@ -60,6 +60,16 @@ test('individual lazy settings don\'t throw when not accessed', () => {
   expect(settings.TEST_2).toEqual('foo');
 });
 
+test('individual eager settings throw when not accessed', () => {
+  expect(() => {
+    Settings({
+      TEST_1: requireInt(),
+      TEST_2: getString(),
+      TEST_3: getBool({lazy: false}),
+    }, {lazy: true, overrides});
+  }).toThrow();
+});
+
 test('lazy settings throws when missing required value accessed', () => {
   expect(() => {
     const settings = Settings({
@@ -112,6 +122,24 @@ test('env values are cached', ()=> {
 
     clearEnvironnentCache();
     expect(settings.TEST_1).toEqual(4);
+  } finally {
+    process.env = OLD_ENV;
+  }
+});
+
+test('lazy parsing behavior when environment override is specified', ()=> {
+  const OLD_ENV = process.env;
+  process.env = {...OLD_ENV};
+  process.env.ENVIRONMENT_PARSER_ALL_LAZY = '1';
+  try {
+      const settings = Settings({
+        TEST_1: requireInt(),
+        TEST_2: getString(),
+        TEST_3: requireBool(),
+      }, {lazy: false, overrides});
+    expect(settings.TEST_1).toEqual(3);
+    expect(settings.TEST_2).toEqual('foo');
+    expect(() => settings.TEST_3).toThrow();
   } finally {
     process.env = OLD_ENV;
   }

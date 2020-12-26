@@ -1,9 +1,9 @@
 import { BuiltInCapitalizationStyle, fixCapitalization } from './capitalization';
 import { ConfigError } from './error';
 
-// TODO: standardize language -- Settings vs. Config, envKey vs envProp vs etc
+// TODO: standardize language -- Settings vs. Config
 
-export interface ConfigOverrides {
+export interface EnvironmentOverrides {
   [envKey: string]: string;
 }
 
@@ -11,7 +11,7 @@ export interface GlobalOptions {
   envStyle?: CapitalizationStyle;
   trim?: TrimValue;
   lazy?: boolean;
-  overrides?: ConfigOverrides;
+  overrides?: EnvironmentOverrides;
 }
 
 export interface BasicOptionalFieldOptions<T> {
@@ -45,8 +45,7 @@ export interface SettingsConfig {
 
 export type TrimValue = true | false | 'throw';
 
-export type CapitalizationStyle = BuiltInCapitalizationStyle | ((propKey: string) => string);
-
+export type CapitalizationStyle = BuiltInCapitalizationStyle | ((configKey: string) => string);
 
 const trimValue = (value: string|undefined, trim: TrimValue): string|undefined => {
   if (value === undefined) {
@@ -78,8 +77,6 @@ const getEnvKey = (configKey: string, envNameOverride: string|undefined, capital
   }
   return fixCapitalization(configKey, capitalizationStyle);
 };
-
-// FIXME: bleh, SettingsConfig? that name kinda sucks
 
 // THUNK
 const bindAllReaders = <T extends SettingsConfig>(
@@ -142,8 +139,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 
   const boundEntries = Object.entries(config).map(([configKey, fieldOptions]) => {
     const reader = bindEntry(configKey, fieldOptions);
-    // FIXME: finalize that env var name, add to README
-    const lazy = process.env['MODULENAME_ALL_LAZY'] === '1' || (fieldOptions.lazy ?? globalOptions.lazy ?? false);
+    const lazy = process.env['ENVIRONMENT_PARSER_ALL_LAZY'] === '1' || (fieldOptions.lazy ?? globalOptions.lazy ?? false);
     if (!lazy) {
       // Invoke it immediately to force validation
       reader();
@@ -159,23 +155,23 @@ export const clearEnvironnentCache = (): void => { cacheEpoch++; };
 export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: ReturnType<T[key]['parser']>} => {
   const readers = bindAllReaders(config, options);
 
-  // Wrap the readers in a proxy object to transparently invoke them when accessed for the first time
+  // Wrap the readers in a proxy object to transparently invoke them and cache the values
   let cache: Partial<{[key in keyof T]: ReturnType<T[key]['parser']>}> = {};
   let cacheVersion = cacheEpoch;
 
-  const get = (target: {[key in keyof T]: () => ReturnType<T[key]['parser']>}, propertyKey: string & keyof T) => {
+  const get = (target: {[key in keyof T]: () => ReturnType<T[key]['parser']>}, configKey: string & keyof T) => {
     if (cacheVersion !== cacheEpoch) {
       cacheVersion = cacheEpoch;
       cache = {};
     }
 
-    if (!(propertyKey in cache)) {
-      const fn = Reflect.get(target, propertyKey);
-      const value = fn(propertyKey);
-      cache[propertyKey] = value;
+    if (!(configKey in cache)) {
+      const fn = Reflect.get(target, configKey);
+      const value = fn(configKey);
+      cache[configKey] = value;
     }
 
-    return cache[propertyKey];
+    return cache[configKey];
   };
   return new Proxy(readers, { get }) as {[key in keyof T]: ReturnType<T[key]['parser']>};
 };
