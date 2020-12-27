@@ -144,3 +144,6 @@ test('lazy parsing behavior when environment override is specified', ()=> {
     process.env = OLD_ENV;
   }
 });
+
+// TODO: test individual field envKey overrides
+// TODO: validation does not run against default values
