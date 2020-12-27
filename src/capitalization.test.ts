@@ -14,8 +14,6 @@ test('Word splitting edge cases', () => {
 test('Test basic generation', () => {
   expect(fixCapitalization('isHttp2', 'lower_snake')).toEqual('is_http_2');
   expect(fixCapitalization('isHttp2', 'lowerCamel')).toEqual('isHttp2');
-  expect(fixCapitalization('isHttp2', 'lower-kebab')).toEqual('is-http-2');
   expect(fixCapitalization('isHttp2', 'UPPER_SNAKE')).toEqual('IS_HTTP_2');
   expect(fixCapitalization('isHttp2', 'UpperCamel')).toEqual('IsHttp2');
-  expect(fixCapitalization('isHttp2', 'UPPER-KEBAB')).toEqual('IS-HTTP-2');
 });
