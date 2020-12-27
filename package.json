@@ -9,7 +9,6 @@
   "private": false,
   "files": ["dist"],
   "scripts": {
-    "fix": "eslint src/*.ts --fix",
     "lint": "eslint src/*.ts",
     "test": "jest",
     "build": "tsc",
