@@ -6,7 +6,20 @@ It can be used in JavaScript projects but is written in [typescript](https://www
 
 ## Usage
 
-TODO: docs and examples
+The use case involves importing `Settings` and invoking it with SettingsConfig object.
+
+```typescript
+import { Settings } from 'environment-parser';
+
+const settings = Settings({
+    FOO: requireString(),
+    BAR: getInt(),
+    BAZ: requireBool({defaultValue: true}),
+});
+```
+
+The resulting object would draw its values from the environment keys `FOO`, `BAR`, and `BAZ` and have the type 
+TODO: docs and example
 
 `ENVIRONMENT_PARSER_ALL_LAZY`
 ## Requirements
