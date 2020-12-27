@@ -65,7 +65,7 @@ test('individual eager settings throw when not accessed', () => {
     Settings({
       TEST_1: requireInt(),
       TEST_2: getString(),
-      TEST_3: getBool({lazy: false}),
+      TEST_3: requireBool({lazy: false}),
     }, {lazy: true, overrides});
   }).toThrow();
 });
