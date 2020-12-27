@@ -5,21 +5,11 @@ import {
   validateIntString,
   validateIntValue,
   numericValidator,
-  stringValidator,
   NumericOptions,
-  StringOptions,
 } from './validators';
 import { URL } from 'url';
 import { BasicFieldOptions, BasicOptionalFieldOptions, BasicRequiredFieldOptions, OptionalFieldOptions, RequiredFieldOptions } from './main';
 import { JsonValue, optionalBigInt, optionalBool, optionalFloat, optionalInt, optionalJson, optionalString, optionalUrl, requiredBigInt, requiredBool, requiredFloat, requiredInt, requiredJson, requiredString, requiredUrl } from './parsers';
-
-const stringOptions = (
-  {validateParsed = [], allowedValues, length, minLength, maxLength, ...options}: BasicFieldOptions<string>&StringOptions
-) =>
-  ({
-    validateParsed: [stringValidator({length, minLength, maxLength, allowedValues}), ...validateParsed],
-    ...options,
-  });
 
 const intOptions = (
   {validateRaw = [], validateParsed = [], min, max, ...options}: BasicFieldOptions<number>&NumericOptions
@@ -54,11 +44,11 @@ const boolOptions = ({validateRaw = [], ...options}: BasicFieldOptions<boolean>)
     ...options,
   });
 
-export const getString = (options: BasicFieldOptions<string>&StringOptions = {}): OptionalFieldOptions<string> =>
-  ({ parser: optionalString, ...stringOptions(options) });
+export const getString = (options: BasicOptionalFieldOptions<string> = {}): OptionalFieldOptions<string> =>
+  ({ parser: optionalString, ...options });
 
-export const requireString = (options: BasicFieldOptions<string>&StringOptions = {}): RequiredFieldOptions<string> =>
-  ({ parser: requiredString, ...stringOptions(options) });
+export const requireString = (options: BasicRequiredFieldOptions<string> = {}): RequiredFieldOptions<string> =>
+  ({ parser: requiredString, ...options });
 
 export const getInt = (options: BasicOptionalFieldOptions<number>&NumericOptions = {}): OptionalFieldOptions<number> =>
   ({ parser: optionalInt, ...intOptions(options) });

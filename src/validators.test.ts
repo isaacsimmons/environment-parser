@@ -8,7 +8,6 @@ import {
   validateIntString,
   validateIntValue,
   restrictValues,
-  stringValidator,
   validateBase64String,
 } from './validators';
 
@@ -54,16 +53,6 @@ test('numeric validator', () => {
   const fiveToTen = numericValidator({min: 5, max: 10});
   [5, 5.0, 5.5, 8, 10, 10n, 10.0].forEach(fiveToTen);
   [4.9999, -5, 12, 50000000].forEach(badNumber => expect(() => fiveToTen(badNumber)).toThrow());
-});
-
-test('string validator', () => {
-  const fiveLong = stringValidator({length: 5});
-  ['apple', 'brown', 'cards', '12345'].forEach(fiveLong);
-  ['', 'five', '123456'].forEach(notFive => expect(() => fiveLong(notFive)).toThrow());
-
-  const twoToFourLong = stringValidator({minLength: 2, maxLength: 4});
-  ['aa', 'bbb', 'cccc', 'two', 'four'].forEach(twoToFourLong);
-  ['a', 'eeeee'].forEach(notTwoFour => expect(() => twoToFourLong(notTwoFour)).toThrow());
 });
 
 test('restricted values validator', () => {

@@ -132,11 +132,11 @@ test('lazy parsing behavior when environment override is specified', ()=> {
   process.env = {...OLD_ENV};
   process.env.ENVIRONMENT_PARSER_ALL_LAZY = '1';
   try {
-      const settings = Settings({
-        TEST_1: requireInt(),
-        TEST_2: getString(),
-        TEST_3: requireBool(),
-      }, {lazy: false, overrides});
+    const settings = Settings({
+      TEST_1: requireInt(),
+      TEST_2: getString(),
+      TEST_3: requireBool(),
+    }, {lazy: false, overrides});
     expect(settings.TEST_1).toEqual(3);
     expect(settings.TEST_2).toEqual('foo');
     expect(() => settings.TEST_3).toThrow();

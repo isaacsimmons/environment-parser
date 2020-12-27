@@ -3,13 +3,6 @@ export interface NumericOptions {
   max?: number|BigInt;
 }
 
-export interface StringOptions {
-  allowedValues?: string[];
-  length?: number;
-  minLength?: number;
-  maxLength?: number;
-}
-
 export const TRUE_VALUES = ['1', 'TRUE', 'true'];
 export const FALSE_VALUES = ['0', 'FALSE', 'false'];
 
@@ -58,21 +51,5 @@ export const numericValidator = ({min, max}: NumericOptions) =>
     }
     if (max !== undefined && value > max) {
       throw new Error(`Value ${value} greater than maximum ${max}`);
-    }
-  };
-
-export const stringValidator = ({allowedValues, length, maxLength, minLength}: StringOptions) =>
-  (value: string): void => {
-    if (allowedValues !== undefined) {
-      restrictValues(allowedValues)(value);
-    }
-    if (length !== undefined && value.length !== length) {
-      throw new Error(`Value "${value}" not required length ${length}`);
-    }
-    if (minLength !== undefined && value.length < minLength) {
-      throw new Error(`Value "${value}" shorter than minimum length ${minLength}`);
-    }
-    if (maxLength !== undefined && value.length > maxLength) {
-      throw new Error(`Value "${value}" longer than maximum length ${maxLength}`);
     }
   };
