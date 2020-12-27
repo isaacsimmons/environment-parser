@@ -6,7 +6,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "moduleResolution": "node"
   },
   "exclude": ["dist"]
 }
