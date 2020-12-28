@@ -6,7 +6,7 @@ It can be used in JavaScript projects but is written in [typescript](https://www
 
 ## Usage
 
-The use case involves importing `Settings` and invoking it with SettingsConfig object.
+The most common use case involves importing the `Settings` function and invoking it with SettingsConfig object.
 
 ```typescript
 import { Settings } from 'environment-parser';
@@ -14,7 +14,7 @@ import { Settings } from 'environment-parser';
 const settings = Settings({
     FOO: requireString(),
     BAR: getInt(),
-    BAZ: requireBool({defaultValue: true}),
+    BAZ: requireBool({defaultValue: false}),
 });
 ```
 
@@ -26,10 +26,30 @@ The resulting object would draw its values from the environment keys `FOO`, `BAR
     BAZ: boolean;
 }
 ```
-Note that the "require" helpers translate into the expected type and the "get" helpers include `undefined` in their types.
-Any "required" parameter can have a "defaultValue" added which will be used in the case that the expected property is either not found or empty.
+The "require" helper methods return a parser with the specified return type (e.g. `requireString()` => `string`) and the return type of the parsers returned by the "get" helper methods include undefined  (e.g. `getString()` =>  `string | undefined`).
+Any "require" helper method can have a "defaultValue" which will be used in the case that the expected property is either not found in the environment or empty.
+Having any properties with a "required" helper method and no default value will throw an error if value isn't present in the environment.
+
+### Validation
+
+In addition to making values "required" or not, the numeric and boolean helpers come with a batch of built-in validators.
+If invalid values are passed (non-integer environment values matching a `getInt()` property key for instance) the package will raise an error.
+Boolean environment values must be one of the following: 
 
 TODO: trim
+
+### Eager vs. Lazy
+
+Missing-value, validation, parsing, and whitespace errors 
+
+`ENVIRONMENT_PARSER_ALL_LAZY`
+
+### Extensibility
+
+In addition to the built-in types and validators user-defined but they can all be easily overridden.
+Additional validation steps can be added to any (new or existing) helper by providing {someKey: [], someOtherKey: []}
+TODO: expose the optional/required parser helpers better?
+TODO: should they just be a separate parameter besides the "parser"? (and use that for the ReturnType<> thing?)
 
 ### Environment Keys
 
@@ -44,19 +64,6 @@ const settings = Settings({
 }, {envStyle: 'lower_snake'});
 ```
 will draw its values from the environment variables `db_host` and `db_port`.
-### Eager vs. Lazy
-
-TODO: docs and example
-
-`ENVIRONMENT_PARSER_ALL_LAZY`
-
-### Extensibility
-
-This package comes with several built-in types and validators, but they can all be easily overridden.
-Additional validation steps can be added to any (new or existing) helper by providing {someKey: [], someOtherKey: []}
-TODO: expose the optional/required parser helpers better?
-TODO: should they just be a separate parameter besides the "parser"? (and use that for the ReturnType<> thing?)
-
 ## Requirements
 
 JS version? TS version?
