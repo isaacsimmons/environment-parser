@@ -26,7 +26,7 @@ The resulting object would draw its values from the environment keys `FOO`, `BAR
     BAZ: boolean;
 }
 ```
-The "require" helper methods return a parser with the specified return type (e.g. `requireString()` => `string`) and the return type of the parsers returned by the "get" helper methods include undefined  (e.g. `getString()` =>  `string | undefined`).
+The "require" helper methods return a parser with the specified return type (e.g. `requireString()` => `string`) while the return type of the parsers returned by the "get" helper methods include undefined  (e.g. `getString()` =>  `string | undefined`).
 Any "require" helper method can have a "defaultValue" which will be used in the case that the expected property is either not found in the environment or empty.
 Having any properties with a "required" helper method and no default value will throw an error if value isn't present in the environment.
 
@@ -34,15 +34,14 @@ Having any properties with a "required" helper method and no default value will 
 
 In addition to making values "required" or not, the numeric and boolean helpers come with a batch of built-in validators.
 If invalid values are passed (non-integer environment values matching a `getInt()` property key for instance) the package will raise an error.
-Boolean environment values must be one of the following: 
-
-TODO: trim
+Boolean environment values must be one of the following strings: `1`, `TRUE`, `true`, `0`, `FALSE`, `false`.
+All values have leading and trailing whitespace trimmed by default.
+You can prevent that behavior (or cause it to throw a validation error instead of automatically fixing it) with either a field-level or global config value of `{trim: true}`, `{trim: false}`, or `{trim: 'throw'}`, with the field-level option taking precedence.
 
 ### Eager vs. Lazy
 
-By default, having an invalid configuration in any way -- missing or invalid values -- will cause the settings object to throw immediately.
-This behavior can be altered to only throw when attempting to access an invalid value.
-The primary ways of doing this are to provide a global config option of `{lazy: true}` (which will apply to all properties in the object), or to provide field-level config options of `{lazy: true}` which will apply to only that specific field.
+By default, having an invalid configuration in any way -- missing or invalid values -- will cause the settings object to throw immediately upon its creation.
+This behavior can be altered to only throw when someone attempts to access an invalid value by passing `{lazy: true}` as a global config option (which will apply to all properties in the object) or a as a field-level config option (which will apply to only that specific field).
 
 ### Extensibility
 
@@ -90,7 +89,7 @@ Run `yarn lint` to check for lint errors, `yarn lint --fix` to attempt to automa
 
 ### Building and Publishing
 
-Build artifacts (*.js, *.d.ts) can be compiled from the typescript sources with `yarn build`.
+Build artifacts (`*.js`, `*.d.ts`) can be compiled from the typescript sources with `yarn build`.
 They can be removed with `yarn clean`.
 // publish to NPM
 
