@@ -1,5 +1,5 @@
 import { getBool, getString, requireBool, requireInt, requireString } from './getters';
-import { clearEnvironnentCache, Settings } from './main';
+import { clearEnvironmentCache, Settings } from './main';
 
 const overrides = { TEST_1: '3', TEST_2: 'foo' };
 
@@ -120,7 +120,7 @@ test('env values are cached', ()=> {
     process.env.TEST_1 = '4';
     expect(settings.TEST_1).toEqual(3);
 
-    clearEnvironnentCache();
+    clearEnvironmentCache();
     expect(settings.TEST_1).toEqual(4);
   } finally {
     process.env = OLD_ENV;

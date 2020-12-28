@@ -40,14 +40,15 @@ TODO: trim
 
 ### Eager vs. Lazy
 
-Missing-value, validation, parsing, and whitespace errors 
-
-`ENVIRONMENT_PARSER_ALL_LAZY`
+By default, having an invalid configuration in any way -- missing or invalid values -- will cause the settings object to throw immediately.
+This behavior can be altered to only throw when attempting to access an invalid value.
+The primary ways of doing this are to provide a global config option of `{lazy: true}` (which will apply to all properties in the object), or to provide field-level config options of `{lazy: true}` which will apply to only that specific field.
 
 ### Extensibility
 
-In addition to the built-in types and validators user-defined but they can all be easily overridden.
-Additional validation steps can be added to any (new or existing) helper by providing {someKey: [], someOtherKey: []}
+In addition to the built-in types and validators user-defined validators can be provided as well.
+Additional validation steps can be added to any (new or existing) helper by providing validation functions in the field-level options for `{validateParsed: [], validateRaw: []}`, depending on if you would like to validate the pre-parsed string value from the environment or the post-parsing value.
+Such functions should return no value but throw an Error if the value is invalid.
 TODO: expose the optional/required parser helpers better?
 TODO: should they just be a separate parameter besides the "parser"? (and use that for the ReturnType<> thing?)
 
@@ -55,7 +56,7 @@ TODO: should they just be a separate parameter besides the "parser"? (and use th
 
 If you want the config object keys to draw from environment variables with different names, there are two options.
 The environment key to draw any individual field's value from can be set with the "envKey" option (e.g. `TEST_1: requireInt({envKey: 'TEST_ONE'}),`).
-Additinoally, the entire batch can be overridden if you want to change the capitalization style.
+Additionally, the keys for the entire object can be overridden at once if you want uniformly use a different capitalization style.
 For instance, the following settings object
 ```typescript
 const settings = Settings({
@@ -63,7 +64,15 @@ const settings = Settings({
     dbPort: requireInt({default: 5432}),
 }, {envStyle: 'lower_snake'});
 ```
-will draw its values from the environment variables `db_host` and `db_port`.
+will draw its values from the environment variables `db_host` and `db_port` rather than `dbHost` and `dbPort`.
+
+### Testing components that use these settings
+
+There are a few features designed to aide in writing tests for components that rely on settings values provided by this library.
+If the environment value `ENVIRONMENT_PARSER_ALL_LAZY=1` is set, all fields will be "lazy" loaded regardless of the field-level or global config paramters that are passed in.
+There is a global config parameter to pass in a set of environment overrides like `{overrides: {FOO: 'BAR', BAZ: 'QUX'}}` which will be used instead of checking process.env for those keys.
+You can `import { clearEnvironmentCache } from 'environment-parser';` and use that function to purge the internally cached values of any current Settings objects, causing them to re-read and validate the values upon next access.
+
 ## Requirements
 
 JS version? TS version?
@@ -71,12 +80,13 @@ JS version? TS version?
 
 ### Testing
 
-Tests are written using [jest](https://jestjs.io/) and can be run with `yarn test`.
+Tests are written using [jest](https://jestjs.io/) and can be found in `/src/*.test.ts`.
+They can be run with `yarn test`.
 
 ### Linting
 
 Linting is provided by [eslint](https://eslint.org/) and based on the typescript-recommended ruleset.
-Run `yarn lint` to check for lint errors, `yarn lint --fix` to attempt to auto-fix them.
+Run `yarn lint` to check for lint errors, `yarn lint --fix` to attempt to automatically fix them.
 
 ### Building and Publishing
 
