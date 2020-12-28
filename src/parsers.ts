@@ -1,4 +1,4 @@
-import {  TRUE_VALUES} from './validators';
+import { TRUE_VALUES } from './validators';
 import { URL } from 'url';
 import { ConfigError } from './error';
 

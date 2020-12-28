@@ -56,8 +56,8 @@ test('bool parser test', () => {
 });
 
 test('json parser test', () => {
-  expect(requiredJson('{"foo": "bar"}')).toEqual({foo: 'bar'});
-  expect(requiredJson('[1,2,"a","b"]')).toEqual([1,2,'a','b']);
+  expect(requiredJson('{"foo": "bar"}')).toEqual({ foo: 'bar' });
+  expect(requiredJson('[1,2,"a","b"]')).toEqual([ 1,2,'a','b' ]);
   expect(requiredJson('"hello"')).toEqual('hello');
   expect(requiredJson('77')).toEqual(77);
 });

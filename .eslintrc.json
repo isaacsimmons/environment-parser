@@ -41,6 +41,14 @@
                 "functions": "never"
             }
         ],
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "array-bracket-spacing": [
+            "error",
+            "always"
+        ],
         "@typescript-eslint/no-unused-vars": [
             "error"
         ],

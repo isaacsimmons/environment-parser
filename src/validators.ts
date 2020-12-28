@@ -3,8 +3,8 @@ export interface NumericOptions {
   max?: number|BigInt;
 }
 
-export const TRUE_VALUES = ['1', 'TRUE', 'true'];
-export const FALSE_VALUES = ['0', 'FALSE', 'false'];
+export const TRUE_VALUES = [ '1', 'TRUE', 'true' ];
+export const FALSE_VALUES = [ '0', 'FALSE', 'false' ];
 
 export const validateIntString = (s: string): void => {
   if (!/^[-+]?(\d+)$/.test(s)) {
@@ -42,9 +42,9 @@ export const restrictValues = <T>(values: T[]) => (value: T): void => {
   }
 };
 
-export const validateBoolString = restrictValues([...TRUE_VALUES, ...FALSE_VALUES]);
+export const validateBoolString = restrictValues([ ...TRUE_VALUES, ...FALSE_VALUES ]);
 
-export const numericValidator = ({min, max}: NumericOptions) =>
+export const numericValidator = ({ min, max }: NumericOptions) =>
   (value: number|BigInt): void => {
     if (min !== undefined && value < min) {
       throw new Error(`Value ${value} less than minimum ${min}`);

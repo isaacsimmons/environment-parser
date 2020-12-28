@@ -137,14 +137,14 @@ const bindAllReaders = <T extends SettingsConfig>(
     return parsedValue;
   };
 
-  const boundEntries = Object.entries(config).map(([configKey, fieldOptions]) => {
+  const boundEntries = Object.entries(config).map(([ configKey, fieldOptions ]) => {
     const reader = bindEntry(configKey, fieldOptions);
     const lazy = process.env['ENVIRONMENT_PARSER_ALL_LAZY'] === '1' || (fieldOptions.lazy ?? globalOptions.lazy ?? false);
     if (!lazy) {
       // Invoke it immediately to force validation
       reader();
     }
-    return [configKey, reader];
+    return [ configKey, reader ];
   });
   return Object.fromEntries(boundEntries) as {[key in keyof T]: () => ReturnType<T[key]['parser']>};
 };

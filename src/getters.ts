@@ -12,35 +12,35 @@ import { BasicFieldOptions, BasicOptionalFieldOptions, BasicRequiredFieldOptions
 import { JsonValue, optionalBigInt, optionalBool, optionalFloat, optionalInt, optionalJson, optionalString, optionalUrl, requiredBigInt, requiredBool, requiredFloat, requiredInt, requiredJson, requiredString, requiredUrl } from './parsers';
 
 const intOptions = (
-  {validateRaw = [], validateParsed = [], min, max, ...options}: BasicFieldOptions<number>&NumericOptions
+  { validateRaw = [], validateParsed = [], min, max, ...options }: BasicFieldOptions<number>&NumericOptions
 ) =>
   ({
-    validateRaw: [validateIntString, ...validateRaw],
-    validateParsed: [validateIntValue, numericValidator({min, max}), ...validateParsed],
+    validateRaw: [ validateIntString, ...validateRaw ],
+    validateParsed: [ validateIntValue, numericValidator({ min, max }), ...validateParsed ],
     ...options,
   });
 
 const floatOptions = (
-  {validateRaw = [], validateParsed = [], min, max, ...options}: BasicFieldOptions<number>&NumericOptions
+  { validateRaw = [], validateParsed = [], min, max, ...options }: BasicFieldOptions<number>&NumericOptions
 ) =>
   ({
-    validateRaw: [validateFloatString, ...validateRaw],
-    validateParsed: [validateFloatValue, numericValidator({min, max}), ...validateParsed],
+    validateRaw: [ validateFloatString, ...validateRaw ],
+    validateParsed: [ validateFloatValue, numericValidator({ min, max }), ...validateParsed ],
     ...options,
   });
 
 const bigIntOptions = (
-  {validateRaw = [], validateParsed = [], ...options}: BasicFieldOptions<BigInt>&NumericOptions
+  { validateRaw = [], validateParsed = [], ...options }: BasicFieldOptions<BigInt>&NumericOptions
 ) =>
   ({
-    validateRaw: [validateIntString, ...validateRaw],
-    validateParsed: [...validateParsed, numericValidator(options)],
+    validateRaw: [ validateIntString, ...validateRaw ],
+    validateParsed: [ ...validateParsed, numericValidator(options) ],
     ...options,
   });
 
-const boolOptions = ({validateRaw = [], ...options}: BasicFieldOptions<boolean>) =>
+const boolOptions = ({ validateRaw = [], ...options }: BasicFieldOptions<boolean>) =>
   ({
-    validateRaw: [validateBoolString, ...validateRaw],
+    validateRaw: [ validateBoolString, ...validateRaw ],
     ...options,
   });
 
@@ -75,19 +75,19 @@ export const requireBool = (options: BasicRequiredFieldOptions<boolean> = {}): R
   ({ parser: requiredBool, ...boolOptions(options) });
 
 export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
-  getInt({min: 0, max: 65535, ...options});
+  getInt({ min: 0, max: 65535, ...options });
 
 export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): RequiredFieldOptions<number> =>
-  requireInt({min: 0, max: 65535, ...options});
+  requireInt({ min: 0, max: 65535, ...options });
 
 export const getUrl = (options: BasicOptionalFieldOptions<URL> = {}): OptionalFieldOptions<URL> =>
-  ({parser: optionalUrl, ...options});
+  ({ parser: optionalUrl, ...options });
 
 export const requireUrl = (options: BasicRequiredFieldOptions<URL> = {}): RequiredFieldOptions<URL> =>
-  ({parser: requiredUrl, ...options});
+  ({ parser: requiredUrl, ...options });
 
 export const getJson = (options: BasicOptionalFieldOptions<JsonValue> = {}): OptionalFieldOptions<JsonValue> =>
-  ({parser: optionalJson, ...options});
+  ({ parser: optionalJson, ...options });
 
 export const requireJson = (options: BasicRequiredFieldOptions<JsonValue> = {}): RequiredFieldOptions<JsonValue> =>
-  ({parser: requiredJson, ...options});
+  ({ parser: requiredJson, ...options });

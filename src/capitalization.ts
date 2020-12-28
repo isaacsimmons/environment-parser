@@ -16,7 +16,7 @@ const combineWords = (words: string[], style: BuiltInCapitalizationStyle) => {
   case 'lower_snake':
     return words.join('_').toLowerCase();
   case 'lowerCamel': {
-    const [first, ...rest] = words;
+    const [ first, ...rest ] = words;
     return first.toLowerCase() + rest.map(capitalizeFirst).join('');
   }
   case 'UpperCamel':
