@@ -37,7 +37,7 @@ export type BasicFieldOptions<T> = BasicOptionalFieldOptions<T> | BasicRequiredF
 
 export interface RequiredFieldOptions<T> extends BasicRequiredFieldOptions<T> {
   parser: (stringValue: string) => T;
-  required?: true;  
+  required?: true;
 //  required?: true;
 }
 
@@ -107,7 +107,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 
     // If no value was found and we have a default, return that, otherwise throw
     if (trimmedValue === undefined || trimmedValue.length === 0) {
-//      return fieldOptions.defaultValue;
+      //      return fieldOptions.defaultValue;
       if ('defaultValue' in fieldOptions && fieldOptions.defaultValue !== undefined) {
         return fieldOptions.defaultValue;
       }
@@ -121,14 +121,14 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the string before parsing
-      try {
-        for (const validateRaw of fieldOptions.validateRaw ?? []) {
-          validateRaw(trimmedValue);
-        }
-      } catch (err) {
-        throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
+    try {
+      for (const validateRaw of fieldOptions.validateRaw ?? []) {
+        validateRaw(trimmedValue);
       }
-    
+    } catch (err) {
+      throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
+    }
+
 
     // Parse the string into the final value
     let parsedValue: F;
@@ -139,13 +139,13 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the post-parsing result as well
-      try {
-        for (const validateParsed of fieldOptions.validateParsed ?? []) {
-          validateParsed(parsedValue);
-        }
-      } catch (err) {
-        throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
+    try {
+      for (const validateParsed of fieldOptions.validateParsed ?? []) {
+        validateParsed(parsedValue);
       }
+    } catch (err) {
+      throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
+    }
 
     return parsedValue;
   };

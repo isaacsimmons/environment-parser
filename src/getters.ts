@@ -66,7 +66,7 @@ export const getBigInt = (options: BasicOptionalFieldOptions<BigInt>&NumericOpti
   ({ parser: parseBigInt, ...bigIntOptions(options), required: false });
 
 export const requireBigInt = (options: BasicRequiredFieldOptions<BigInt>&NumericOptions = {}): RequiredFieldOptions<BigInt> =>
-  ({ parser: parseBigInt, ...bigIntOptions(options)});
+  ({ parser: parseBigInt, ...bigIntOptions(options) });
 
 export const getBool = (options: BasicOptionalFieldOptions<boolean> = {}): OptionalFieldOptions<boolean> =>
   ({ parser: parseBool, ...boolOptions(options), required: false });

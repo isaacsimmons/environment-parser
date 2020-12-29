@@ -1,4 +1,4 @@
-import { myParseFloat, myParseInt, parseBigInt, parseJson, parseUrl, parseBool, parseString } from './parsers';
+import { myParseFloat, myParseInt, parseBigInt, parseJson, parseUrl, parseBool } from './parsers';
 
 test('int parser test', () => {
   expect(myParseInt('42')).toEqual(42);
