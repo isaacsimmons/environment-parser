@@ -9,7 +9,7 @@ import {
 } from './validators';
 import { URL } from 'url';
 import { BasicFieldOptions, BasicOptionalFieldOptions, BasicRequiredFieldOptions, OptionalFieldOptions, RequiredFieldOptions } from './main';
-import { JsonValue, optionalBigInt, optionalBool, optionalFloat, optionalInt, optionalJson, optionalString, optionalUrl, requiredBigInt, requiredBool, requiredFloat, requiredInt, requiredJson, requiredString, requiredUrl } from './parsers';
+import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, parseString, parseUrl } from './parsers';
 
 const intOptions = (
   { validateRaw = [], validateParsed = [], min, max, ...options }: BasicFieldOptions<number>&NumericOptions
@@ -45,34 +45,34 @@ const boolOptions = ({ validateRaw = [], ...options }: BasicFieldOptions<boolean
   });
 
 export const getString = (options: BasicOptionalFieldOptions<string> = {}): OptionalFieldOptions<string> =>
-  ({ parser: optionalString, ...options });
+  ({ parser: parseString, ...options, required: false });
 
 export const requireString = (options: BasicRequiredFieldOptions<string> = {}): RequiredFieldOptions<string> =>
-  ({ parser: requiredString, ...options });
+  ({ parser: parseString, ...options });
 
 export const getInt = (options: BasicOptionalFieldOptions<number>&NumericOptions = {}): OptionalFieldOptions<number> =>
-  ({ parser: optionalInt, ...intOptions(options) });
+  ({ parser: myParseInt, ...intOptions(options), required: false });
 
 export const requireInt = (options: BasicRequiredFieldOptions<number>&NumericOptions = {}): RequiredFieldOptions<number> =>
-  ({ parser: requiredInt, ...intOptions(options) });
+  ({ parser: myParseInt, ...intOptions(options) });
 
 export const getFloat = (options: BasicOptionalFieldOptions<number>&NumericOptions = {}): OptionalFieldOptions<number> =>
-  ({ parser: optionalFloat, ...floatOptions(options) });
+  ({ parser: myParseFloat, ...floatOptions(options), required: false });
 
 export const requireFloat = (options: BasicRequiredFieldOptions<number>&NumericOptions = {}): RequiredFieldOptions<number> =>
-  ({ parser: requiredFloat, ...floatOptions(options) });
+  ({ parser: myParseFloat, ...floatOptions(options) });
 
 export const getBigInt = (options: BasicOptionalFieldOptions<BigInt>&NumericOptions = {}): OptionalFieldOptions<BigInt> =>
-  ({ parser: optionalBigInt, ...bigIntOptions(options) });
+  ({ parser: parseBigInt, ...bigIntOptions(options), required: false });
 
 export const requireBigInt = (options: BasicRequiredFieldOptions<BigInt>&NumericOptions = {}): RequiredFieldOptions<BigInt> =>
-  ({ parser: requiredBigInt, ...bigIntOptions(options) });
+  ({ parser: parseBigInt, ...bigIntOptions(options)});
 
 export const getBool = (options: BasicOptionalFieldOptions<boolean> = {}): OptionalFieldOptions<boolean> =>
-  ({ parser: optionalBool, ...boolOptions(options) });
+  ({ parser: parseBool, ...boolOptions(options), required: false });
 
 export const requireBool = (options: BasicRequiredFieldOptions<boolean> = {}): RequiredFieldOptions<boolean> =>
-  ({ parser: requiredBool, ...boolOptions(options) });
+  ({ parser: parseBool, ...boolOptions(options) });
 
 export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
   getInt({ min: 0, max: 65535, ...options });
@@ -81,13 +81,13 @@ export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): Re
   requireInt({ min: 0, max: 65535, ...options });
 
 export const getUrl = (options: BasicOptionalFieldOptions<URL> = {}): OptionalFieldOptions<URL> =>
-  ({ parser: optionalUrl, ...options });
+  ({ parser: parseUrl, ...options, required: false });
 
 export const requireUrl = (options: BasicRequiredFieldOptions<URL> = {}): RequiredFieldOptions<URL> =>
-  ({ parser: requiredUrl, ...options });
+  ({ parser: parseUrl, ...options });
 
 export const getJson = (options: BasicOptionalFieldOptions<JsonValue> = {}): OptionalFieldOptions<JsonValue> =>
-  ({ parser: optionalJson, ...options });
+  ({ parser: parseJson, ...options, required: false });
 
 export const requireJson = (options: BasicRequiredFieldOptions<JsonValue> = {}): RequiredFieldOptions<JsonValue> =>
-  ({ parser: requiredJson, ...options });
+  ({ parser: parseJson, ...options });

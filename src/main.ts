@@ -23,18 +23,27 @@ export interface BasicOptionalFieldOptions<T> {
 }
 
 // TODO: is it worth it to have this extra type just to prevent an "optional" parser from being paired with a default value?
-export interface BasicRequiredFieldOptions<T> extends BasicOptionalFieldOptions<T> {
+export interface BasicRequiredFieldOptions<T> {
+  envName?: string;
+  validateRaw?: Array<(value: string) => void>;
+  validateParsed?: Array<(value: T) => void>;
+  trim?: TrimValue;
+  lazy?: boolean;
+
   defaultValue?: T;
 }
 
 export type BasicFieldOptions<T> = BasicOptionalFieldOptions<T> | BasicRequiredFieldOptions<T>;
 
 export interface RequiredFieldOptions<T> extends BasicRequiredFieldOptions<T> {
-  parser: (stringValue: string|undefined) => T;
+  parser: (stringValue: string) => T;
+  required?: true;  
+//  required?: true;
 }
 
 export interface OptionalFieldOptions<T> extends BasicOptionalFieldOptions<T> {
-  parser: (stringValue: string|undefined) => T | undefined;
+  parser: (stringValue: string) => T;
+  required: false;
 }
 
 type FieldOptions<T> = RequiredFieldOptions<T> | OptionalFieldOptions<T>;
@@ -85,6 +94,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 ): {[key in keyof T]: () => ReturnType<T[key]['parser']>} => {
   const bindEntry = <F>(configKey: string, fieldOptions: FieldOptions<F>) => () => {
     const envKey = getEnvKey(configKey, fieldOptions.envName, globalOptions.envStyle);
+
     const rawValue = (globalOptions.overrides && globalOptions.overrides[envKey]) ?? process.env[envKey];
 
     // Optionally trim leading/trailing whitespace
@@ -94,18 +104,23 @@ const bindAllReaders = <T extends SettingsConfig>(
     } catch (err) {
       throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
-    // lump together emptystring and undefined
-    if (trimmedValue !== undefined && trimmedValue.length === 0) {
-      trimmedValue = undefined;
-    }
 
-    // If no value was found and we have a default, return that
-    if (trimmedValue === undefined && 'defaultValue' in fieldOptions && fieldOptions.defaultValue !== undefined) {
-      return fieldOptions.defaultValue;
+    // If no value was found and we have a default, return that, otherwise throw
+    if (trimmedValue === undefined || trimmedValue.length === 0) {
+//      return fieldOptions.defaultValue;
+      if ('defaultValue' in fieldOptions && fieldOptions.defaultValue !== undefined) {
+        return fieldOptions.defaultValue;
+      }
+
+      const required = fieldOptions.required ?? true;
+      if (required) {
+        throw new ConfigError('Missing required value'); // FIXME: more details in the error message
+      } else {
+        return undefined;
+      }
     }
 
     // Validate the string before parsing
-    if (trimmedValue !== undefined) {
       try {
         for (const validateRaw of fieldOptions.validateRaw ?? []) {
           validateRaw(trimmedValue);
@@ -113,10 +128,10 @@ const bindAllReaders = <T extends SettingsConfig>(
       } catch (err) {
         throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
       }
-    }
+    
 
     // Parse the string into the final value
-    let parsedValue: F | undefined;
+    let parsedValue: F;
     try {
       parsedValue = fieldOptions.parser(trimmedValue);
     } catch (err) {
@@ -124,7 +139,6 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the post-parsing result as well
-    if (parsedValue !== undefined) {
       try {
         for (const validateParsed of fieldOptions.validateParsed ?? []) {
           validateParsed(parsedValue);
@@ -132,7 +146,6 @@ const bindAllReaders = <T extends SettingsConfig>(
       } catch (err) {
         throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
       }
-    }
 
     return parsedValue;
   };
@@ -150,9 +163,9 @@ const bindAllReaders = <T extends SettingsConfig>(
 };
 
 let cacheEpoch = 0;
-export const clearEnvironnentCache = (): void => { cacheEpoch++; };
+export const clearEnvironmentCache = (): void => { cacheEpoch++; };
 
-export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: ReturnType<T[key]['parser']>} => {
+export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends RequiredFieldOptions<ReturnType<T[key]['parser']>> ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them and cache the values
@@ -173,5 +186,5 @@ export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOpt
 
     return cache[configKey];
   };
-  return new Proxy(readers, { get }) as {[key in keyof T]: ReturnType<T[key]['parser']>};
+  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends RequiredFieldOptions<ReturnType<T[key]['parser']>> ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
 };
