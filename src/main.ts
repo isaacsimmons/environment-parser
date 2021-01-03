@@ -15,10 +15,8 @@ export interface GlobalOptions {
 }
 export interface RealBasicFieldOptions<T> {
   envName?: string;
-  validateRaw?: Array<(value: string) => void>; // TODO: bundle the default validators into the parsing functions
-                                                // TODO: make these no longer be arrays??
-                                                // TODO: drop validateRaw entirely
-                                                validateParsed?: Array<(value: T) => void>;
+  validateRaw?: (value: string) => void;
+  validateParsed?: (value: T) => void;
   trim?: TrimValue;
   lazy?: boolean;
   // required: boolean;
@@ -122,14 +120,13 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the string before parsing
-    try {
-      for (const validateRaw of fieldOptions.validateRaw ?? []) {
-        validateRaw(trimmedValue);
+    if (fieldOptions.validateRaw) {
+      try {
+        fieldOptions.validateRaw(trimmedValue);
+      } catch (err) {
+        throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
       }
-    } catch (err) {
-      throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
-
 
     // Parse the string into the final value
     let parsedValue: F;
@@ -140,12 +137,12 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Validate the post-parsing result as well
-    try {
-      for (const validateParsed of fieldOptions.validateParsed ?? []) {
-        validateParsed(parsedValue);
+    if (fieldOptions.validateParsed) {
+      try {
+        fieldOptions.validateParsed(parsedValue);
+      } catch (err) {
+        throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
       }
-    } catch (err) {
-      throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
     }
 
     return parsedValue;

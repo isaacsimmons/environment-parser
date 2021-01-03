@@ -1,12 +1,3 @@
-import {
-  validateBoolRaw,
-  validateFloatRaw,
-  validateFloatParsed,
-  validateIntRaw,
-  validateIntParsed,
-  numericValidator,
-  NumericOptions,
-} from './validators';
 import { URL } from 'url';
 import { BasicFieldOptions, FieldOptions, ItsOptional, ItsRequired } from './main';
 import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, parseString, parseUrl } from './parsers';
@@ -16,31 +7,31 @@ import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson,
 export const fooInt = <T extends BasicFieldOptions<number>>(options: T): T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional =>
   ({
     parser: myParseInt,
-    ...options
+    ...options,
   }) as unknown as T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional;
 
-  export const fooString = <T extends BasicFieldOptions<string>>(options: T): T extends ItsRequired ? FieldOptions<string> & ItsRequired : FieldOptions<string> & ItsOptional =>
+export const fooString = <T extends BasicFieldOptions<string>>(options: T): T extends ItsRequired ? FieldOptions<string> & ItsRequired : FieldOptions<string> & ItsOptional =>
   ({
     parser: parseString,
-    ...options
+    ...options,
   }) as unknown as T extends ItsRequired ? FieldOptions<string> & ItsRequired : FieldOptions<string> & ItsOptional;
 
-  export const fooBool = <T extends BasicFieldOptions<boolean>>(options: T): T extends ItsRequired ? FieldOptions<boolean> & ItsRequired : FieldOptions<boolean> & ItsOptional =>
+export const fooBool = <T extends BasicFieldOptions<boolean>>(options: T): T extends ItsRequired ? FieldOptions<boolean> & ItsRequired : FieldOptions<boolean> & ItsOptional =>
   ({
     parser: parseBool,
-    ...options
+    ...options,
   }) as unknown as T extends ItsRequired ? FieldOptions<boolean> & ItsRequired : FieldOptions<boolean> & ItsOptional;
 
-  export const fooFloat = <T extends BasicFieldOptions<number>>(options: T): T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional =>
+export const fooFloat = <T extends BasicFieldOptions<number>>(options: T): T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional =>
   ({
     parser: myParseFloat,
-    ...options
+    ...options,
   }) as unknown as T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional;
 
-  export const fooBigInt = <T extends BasicFieldOptions<BigInt>>(options: T): T extends ItsRequired ? FieldOptions<BigInt> & ItsRequired : FieldOptions<BigInt> & ItsOptional =>
+export const fooBigInt = <T extends BasicFieldOptions<BigInt>>(options: T): T extends ItsRequired ? FieldOptions<BigInt> & ItsRequired : FieldOptions<BigInt> & ItsOptional =>
   ({
     parser: parseBigInt,
-    ...options
+    ...options,
   }) as unknown as T extends ItsRequired ? FieldOptions<BigInt> & ItsRequired : FieldOptions<BigInt> & ItsOptional;
 
 // export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
