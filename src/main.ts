@@ -14,31 +14,27 @@ export interface GlobalOptions {
   lazy?: boolean;
   overrides?: EnvironmentOverrides;
 }
-export interface RealBasicFieldOptions<T> {
+
+export type BasicFieldOptions<T> = {
   envName?: string;
   validateRaw?: (value: string) => void;
   validateParsed?: (value: T) => void;
   trim?: TrimValue;
   lazy?: boolean;
-  defaultValue?: T; // Move this to required?
-}
+} & (RequiredFieldOptions<T> | OptionalFieldOptions);
 
-export type BasicFieldOptions<T> = RealBasicFieldOptions<T> & (ItsRequired | ItsOptional);
-
-export interface ItsRequired {
+export interface RequiredFieldOptions<T> {
+  defaultValue?: T;
   required: true;
 }
 
-export interface ItsOptional {
+export interface OptionalFieldOptions {
   required: false;
 }
 
-export interface RealFieldOptins<T> extends RealBasicFieldOptions<T> {
+export type FieldOptions<T> = BasicFieldOptions<T> & {
   parser: Parser<T>;
-}
-
-export type FieldOptions<T> = RealFieldOptins<T> & (ItsRequired | ItsOptional);
-
+};
 export interface SettingsConfig {
   [key: string]: FieldOptions<any>;
 }
@@ -155,7 +151,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 let cacheEpoch = 0;
 export const clearEnvironmentCache = (): void => { cacheEpoch++; };
 
-export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends ItsRequired ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
+export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends RequiredFieldOptions<unknown> ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them and cache the values
@@ -176,5 +172,5 @@ export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOpt
 
     return cache[configKey];
   };
-  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends ItsRequired ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
+  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends RequiredFieldOptions<unknown> ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
 };
