@@ -4,6 +4,7 @@ export interface NumericOptions {
   max?: number|BigInt;
 }
 
+// TODO: rename with BOOL_
 export const TRUE_VALUES = [ '1', 'TRUE', 'true' ];
 export const FALSE_VALUES = [ '0', 'FALSE', 'false' ];
 
