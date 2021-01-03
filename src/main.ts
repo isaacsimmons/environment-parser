@@ -25,11 +25,11 @@ export type BasicFieldOptions<T> = {
 
 export interface RequiredFieldOptions<T> {
   defaultValue?: T;
-  required: true;
+  optional: false;
 }
 
 export interface OptionalFieldOptions {
-  required: false;
+  optional: true;
 }
 
 export type FieldOptions<T> = BasicFieldOptions<T> & {
@@ -99,11 +99,10 @@ const bindAllReaders = <T extends SettingsConfig>(
         return fieldOptions.defaultValue;
       }
 
-      const required = fieldOptions.required ?? true;
-      if (required) {
-        throw new ConfigError('Missing required value'); // FIXME: more details in the error message
-      } else {
+      if (fieldOptions.optional) {
         return undefined;
+      } else {
+        throw new ConfigError('Missing required value'); // FIXME: more details in the error message
       }
     }
 
