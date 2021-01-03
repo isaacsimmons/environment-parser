@@ -1,5 +1,6 @@
 import { BuiltInCapitalizationStyle, fixCapitalization } from './capitalization';
 import { ConfigError } from './error';
+import { Parser } from './parsers';
 
 // TODO: standardize language -- Settings vs. Config
 
@@ -19,8 +20,7 @@ export interface RealBasicFieldOptions<T> {
   validateParsed?: (value: T) => void;
   trim?: TrimValue;
   lazy?: boolean;
-  // required: boolean;
-  defaultValue?: T;
+  defaultValue?: T; // Move this to required?
 }
 
 export type BasicFieldOptions<T> = RealBasicFieldOptions<T> & (ItsRequired | ItsOptional);
@@ -34,16 +34,8 @@ export interface ItsOptional {
 }
 
 export interface RealFieldOptins<T> extends RealBasicFieldOptions<T> {
-  parser: (stringValue: string) => T;
+  parser: Parser<T>;
 }
-// export interface RequiredFieldOptions<T> extends BasicFieldOptions<T> {
-//   required: true;
-// }
-
-// export interface OptionalFieldOptions<T> extends BasicFieldOptions<T> {
-//   parser: (stringValue: string) => T;
-//   required: false;
-// }
 
 export type FieldOptions<T> = RealFieldOptins<T> & (ItsRequired | ItsOptional);
 

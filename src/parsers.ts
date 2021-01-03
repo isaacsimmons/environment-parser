@@ -6,7 +6,7 @@ export type JsonValue = boolean | number | string | null | JsonArray | JsonMap;
 type JsonMap = {[key: string]: JsonValue };
 type JsonArray = JsonValue[];
 
-type Parser<T> = (stringValue: string) => T;
+export type Parser<T> = (stringValue: string) => T;
 
 export const parseString: Parser<string> = s => s;
 
