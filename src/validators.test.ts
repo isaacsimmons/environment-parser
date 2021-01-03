@@ -2,13 +2,13 @@ import {
   FALSE_VALUES,
   TRUE_VALUES,
   numericValidator,
-  validateBoolString,
-  validateFloatString,
-  validateFloatValue,
-  validateIntString,
-  validateIntValue,
+  validateBoolRaw,
+  validateFloatRaw,
+  validateFloatParsed,
+  validateIntRaw,
+  validateIntParsed,
   restrictValues,
-  validateBase64String,
+  validateBase64Raw,
 } from './validators';
 
 const intStrings = [ '1000', '-1000', '+1000', '0', '+0', '-0' ];
@@ -25,28 +25,28 @@ const badNumbers = [ NaN, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_
 const badInts = [ 9007199254740993, -9007199254740993 ];
 
 test('int validators', () => {
-  intStrings.forEach(validateIntString);
+  intStrings.forEach(validateIntRaw);
 
   const badStrings = [ ...badNumberStrings, ...floatStrings ];
-  badStrings.forEach(badString => expect(() => validateIntString(badString)).toThrow());
+  badStrings.forEach(badString => expect(() => validateIntRaw(badString)).toThrow());
 
-  ints.forEach(validateIntValue);
+  ints.forEach(validateIntParsed);
 
   const badValues = [ ...floats, ...badNumbers, ...badInts ];
-  badValues.forEach(badValue => expect(() => validateIntValue(badValue)).toThrow());
+  badValues.forEach(badValue => expect(() => validateIntParsed(badValue)).toThrow());
 });
 
 test('float validators', () => {
-  [ ...intStrings, ...floatStrings ].forEach(validateFloatString);
-  badNumberStrings.forEach(badString => expect(() => validateFloatString(badString)).toThrow());
+  [ ...intStrings, ...floatStrings ].forEach(validateFloatRaw);
+  badNumberStrings.forEach(badString => expect(() => validateFloatRaw(badString)).toThrow());
 
-  [ ...ints, ...floats ].forEach(validateFloatValue);
-  badNumbers.forEach(badNumber => expect(() => validateFloatValue(badNumber)).toThrow());
+  [ ...ints, ...floats ].forEach(validateFloatParsed);
+  badNumbers.forEach(badNumber => expect(() => validateFloatParsed(badNumber)).toThrow());
 });
 
 test('boolean validators', () => {
-  [ ...TRUE_VALUES, ...FALSE_VALUES ].forEach(validateBoolString);
-  [ 'yes', 'Y', 'TrUe', '', 'foo' ].forEach(badBool => expect(() => validateBoolString(badBool)).toThrow());
+  [ ...TRUE_VALUES, ...FALSE_VALUES ].forEach(validateBoolRaw);
+  [ 'yes', 'Y', 'TrUe', '', 'foo' ].forEach(badBool => expect(() => validateBoolRaw(badBool)).toThrow());
 });
 
 test('numeric validator', () => {
@@ -65,6 +65,6 @@ test('restricted values validator', () => {
 });
 
 test('base64 tester', () => {
-  [ '1qAZ2WSx3EDc++++', 'QWERTY==', 'ASD=', '/A==' ].forEach(validateBase64String);
-  [ 'x', 'ABCDE===', '1!qw', '1Qa', 'aeiou==' ].forEach(bad64 => expect(() => validateBase64String(bad64)).toThrow());
+  [ '1qAZ2WSx3EDc++++', 'QWERTY==', 'ASD=', '/A==' ].forEach(validateBase64Raw);
+  [ 'x', 'ABCDE===', '1!qw', '1Qa', 'aeiou==' ].forEach(bad64 => expect(() => validateBase64Raw(bad64)).toThrow());
 });

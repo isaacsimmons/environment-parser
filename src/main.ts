@@ -13,40 +13,41 @@ export interface GlobalOptions {
   lazy?: boolean;
   overrides?: EnvironmentOverrides;
 }
-
-export interface BasicOptionalFieldOptions<T> {
+export interface RealBasicFieldOptions<T> {
   envName?: string;
-  validateRaw?: Array<(value: string) => void>;
-  validateParsed?: Array<(value: T) => void>;
+  validateRaw?: Array<(value: string) => void>; // TODO: bundle the default validators into the parsing functions
+                                                // TODO: make these no longer be arrays??
+                                                // TODO: drop validateRaw entirely
+                                                validateParsed?: Array<(value: T) => void>;
   trim?: TrimValue;
   lazy?: boolean;
-}
-
-// TODO: is it worth it to have this extra type just to prevent an "optional" parser from being paired with a default value?
-export interface BasicRequiredFieldOptions<T> {
-  envName?: string;
-  validateRaw?: Array<(value: string) => void>;
-  validateParsed?: Array<(value: T) => void>;
-  trim?: TrimValue;
-  lazy?: boolean;
-
+  // required: boolean;
   defaultValue?: T;
 }
 
-export type BasicFieldOptions<T> = BasicOptionalFieldOptions<T> | BasicRequiredFieldOptions<T>;
+export type BasicFieldOptions<T> = RealBasicFieldOptions<T> & (ItsRequired | ItsOptional);
 
-export interface RequiredFieldOptions<T> extends BasicRequiredFieldOptions<T> {
-  parser: (stringValue: string) => T;
-  required?: true;
-//  required?: true;
+export interface ItsRequired {
+  required: true;
 }
 
-export interface OptionalFieldOptions<T> extends BasicOptionalFieldOptions<T> {
-  parser: (stringValue: string) => T;
+export interface ItsOptional {
   required: false;
 }
 
-type FieldOptions<T> = RequiredFieldOptions<T> | OptionalFieldOptions<T>;
+export interface RealFieldOptins<T> extends RealBasicFieldOptions<T> {
+  parser: (stringValue: string) => T;
+}
+// export interface RequiredFieldOptions<T> extends BasicFieldOptions<T> {
+//   required: true;
+// }
+
+// export interface OptionalFieldOptions<T> extends BasicFieldOptions<T> {
+//   parser: (stringValue: string) => T;
+//   required: false;
+// }
+
+export type FieldOptions<T> = RealFieldOptins<T> & (ItsRequired | ItsOptional);
 
 export interface SettingsConfig {
   [key: string]: FieldOptions<any>;
@@ -165,7 +166,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 let cacheEpoch = 0;
 export const clearEnvironmentCache = (): void => { cacheEpoch++; };
 
-export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends RequiredFieldOptions<ReturnType<T[key]['parser']>> ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
+export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends ItsRequired ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them and cache the values
@@ -186,5 +187,5 @@ export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOpt
 
     return cache[configKey];
   };
-  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends RequiredFieldOptions<ReturnType<T[key]['parser']>> ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
+  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends ItsRequired ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
 };

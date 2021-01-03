@@ -1,93 +1,78 @@
 import {
-  validateBoolString,
-  validateFloatString,
-  validateFloatValue,
-  validateIntString,
-  validateIntValue,
+  validateBoolRaw,
+  validateFloatRaw,
+  validateFloatParsed,
+  validateIntRaw,
+  validateIntParsed,
   numericValidator,
   NumericOptions,
 } from './validators';
 import { URL } from 'url';
-import { BasicFieldOptions, BasicOptionalFieldOptions, BasicRequiredFieldOptions, OptionalFieldOptions, RequiredFieldOptions } from './main';
+import { BasicFieldOptions, FieldOptions, ItsOptional, ItsRequired } from './main';
 import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, parseString, parseUrl } from './parsers';
 
-const intOptions = (
-  { validateRaw = [], validateParsed = [], min, max, ...options }: BasicFieldOptions<number>&NumericOptions
-) =>
+const intOptions = {
+    parser: myParseInt,
+    validateRaw: [validateIntRaw],
+    validateParsed: [ validateIntParsed ],
+  };
+
+const floatOptions = {
+    parser: myParseFloat,
+    validateRaw: [ validateFloatRaw ],
+    validateParsed: [ validateFloatParsed ],
+  };
+
+const bigIntOptions = {
+    parser: parseBigInt,
+    validateRaw: [ validateIntRaw ],
+  };
+
+const boolOptions = {
+    parser: parseBool,
+    validateRaw: [ validateBoolRaw ],
+  };
+
+const stringOptions = {
+  parser: parseString,
+};
+
+// FIXME: can I get rid of the "as unknown" in these?
+// TODO: make all of these params have an optional value of {} (or somethign with required if must be)
+export const fooInt = <T extends BasicFieldOptions<number>>(options: T): T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional =>
   ({
-    validateRaw: [ validateIntString, ...validateRaw ],
-    validateParsed: [ validateIntValue, numericValidator({ min, max }), ...validateParsed ],
-    ...options,
-  });
+    parser: myParseInt,
+    validateRaw: [validateIntRaw],
+    validateParsed: [ validateIntParsed ],
+    ...options
+  }) as unknown as T extends ItsRequired ? FieldOptions<number> & ItsRequired : FieldOptions<number> & ItsOptional;
 
-const floatOptions = (
-  { validateRaw = [], validateParsed = [], min, max, ...options }: BasicFieldOptions<number>&NumericOptions
-) =>
+  export const fooString = <T extends BasicFieldOptions<string>>(options: T): T extends ItsRequired ? FieldOptions<string> & ItsRequired : FieldOptions<string> & ItsOptional =>
   ({
-    validateRaw: [ validateFloatString, ...validateRaw ],
-    validateParsed: [ validateFloatValue, numericValidator({ min, max }), ...validateParsed ],
-    ...options,
-  });
+    parser: parseString,
+    ...options
+  }) as unknown as T extends ItsRequired ? FieldOptions<string> & ItsRequired : FieldOptions<string> & ItsOptional;
 
-const bigIntOptions = (
-  { validateRaw = [], validateParsed = [], ...options }: BasicFieldOptions<BigInt>&NumericOptions
-) =>
+export const fooBool = <T extends BasicFieldOptions<boolean>>(options: T): T extends ItsRequired ? FieldOptions<boolean> & ItsRequired : FieldOptions<boolean> & ItsOptional =>
   ({
-    validateRaw: [ validateIntString, ...validateRaw ],
-    validateParsed: [ ...validateParsed, numericValidator(options) ],
-    ...options,
-  });
+    parser: parseBool,
+    ...options
+  }) as unknown as T extends ItsRequired ? FieldOptions<boolean> & ItsRequired : FieldOptions<boolean> & ItsOptional;
 
-const boolOptions = ({ validateRaw = [], ...options }: BasicFieldOptions<boolean>) =>
-  ({
-    validateRaw: [ validateBoolString, ...validateRaw ],
-    ...options,
-  });
+//fooFloat
 
-export const getString = (options: BasicOptionalFieldOptions<string> = {}): OptionalFieldOptions<string> =>
-  ({ parser: parseString, ...options, required: false });
+//fooBigInt
 
-export const requireString = (options: BasicRequiredFieldOptions<string> = {}): RequiredFieldOptions<string> =>
-  ({ parser: parseString, ...options });
+// export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
+//   getInt({ min: 0, max: 65535, ...options });
 
-export const getInt = (options: BasicOptionalFieldOptions<number>&NumericOptions = {}): OptionalFieldOptions<number> =>
-  ({ parser: myParseInt, ...intOptions(options), required: false });
+// export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): RequiredFieldOptions<number> =>
+//   requireInt({ min: 0, max: 65535, ...options });
 
-export const requireInt = (options: BasicRequiredFieldOptions<number>&NumericOptions = {}): RequiredFieldOptions<number> =>
-  ({ parser: myParseInt, ...intOptions(options) });
+export const fooUrl = <T extends BasicFieldOptions<URL>>(options: T): T extends ItsRequired ? FieldOptions<URL> & ItsRequired : FieldOptions<URL> & ItsOptional =>
+  ({ parser: parseUrl, ...options,
+  }) as unknown as T extends ItsRequired ? FieldOptions<URL> & ItsRequired : FieldOptions<URL> & ItsOptional;
 
-export const getFloat = (options: BasicOptionalFieldOptions<number>&NumericOptions = {}): OptionalFieldOptions<number> =>
-  ({ parser: myParseFloat, ...floatOptions(options), required: false });
-
-export const requireFloat = (options: BasicRequiredFieldOptions<number>&NumericOptions = {}): RequiredFieldOptions<number> =>
-  ({ parser: myParseFloat, ...floatOptions(options) });
-
-export const getBigInt = (options: BasicOptionalFieldOptions<BigInt>&NumericOptions = {}): OptionalFieldOptions<BigInt> =>
-  ({ parser: parseBigInt, ...bigIntOptions(options), required: false });
-
-export const requireBigInt = (options: BasicRequiredFieldOptions<BigInt>&NumericOptions = {}): RequiredFieldOptions<BigInt> =>
-  ({ parser: parseBigInt, ...bigIntOptions(options) });
-
-export const getBool = (options: BasicOptionalFieldOptions<boolean> = {}): OptionalFieldOptions<boolean> =>
-  ({ parser: parseBool, ...boolOptions(options), required: false });
-
-export const requireBool = (options: BasicRequiredFieldOptions<boolean> = {}): RequiredFieldOptions<boolean> =>
-  ({ parser: parseBool, ...boolOptions(options) });
-
-export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
-  getInt({ min: 0, max: 65535, ...options });
-
-export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): RequiredFieldOptions<number> =>
-  requireInt({ min: 0, max: 65535, ...options });
-
-export const getUrl = (options: BasicOptionalFieldOptions<URL> = {}): OptionalFieldOptions<URL> =>
-  ({ parser: parseUrl, ...options, required: false });
-
-export const requireUrl = (options: BasicRequiredFieldOptions<URL> = {}): RequiredFieldOptions<URL> =>
-  ({ parser: parseUrl, ...options });
-
-export const getJson = (options: BasicOptionalFieldOptions<JsonValue> = {}): OptionalFieldOptions<JsonValue> =>
-  ({ parser: parseJson, ...options, required: false });
-
-export const requireJson = (options: BasicRequiredFieldOptions<JsonValue> = {}): RequiredFieldOptions<JsonValue> =>
-  ({ parser: parseJson, ...options });
+export const fooJson = <T extends BasicFieldOptions<URL>>(options: T): T extends ItsRequired ? FieldOptions<JsonValue> & ItsRequired : FieldOptions<JsonValue> & ItsOptional =>
+  ({ parser: parseJson, ...options,
+  }) as unknown as T extends ItsRequired ? FieldOptions<JsonValue> & ItsRequired : FieldOptions<JsonValue> & ItsOptional;
