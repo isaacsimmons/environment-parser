@@ -141,7 +141,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 let cacheEpoch = 0;
 export const clearEnvironmentCache = (): void => { cacheEpoch++; };
 
-export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends OptionalFieldOptions ? (ReturnType<T[key]['parser']> | undefined) : ReturnType<T[key]['parser']>)} => {
+export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends OptionalFieldOptions ? ReturnType<T[key]['parser']> | undefined : ReturnType<T[key]['parser']>)} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them and cache the values
@@ -162,5 +162,5 @@ export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOpt
 
     return cache[configKey];
   };
-  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends OptionalFieldOptions ? (ReturnType<T[key]['parser']> | undefined) : ReturnType<T[key]['parser']>)};
+  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends OptionalFieldOptions ? ReturnType<T[key]['parser']> | undefined : ReturnType<T[key]['parser']>)};
 };
