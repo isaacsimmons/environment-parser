@@ -15,17 +15,18 @@ export interface GlobalOptions {
   overrides?: EnvironmentOverrides;
 }
 
-export type BasicFieldOptions<T> = {
+export interface BasicFieldOptions<T> {
   envName?: string;
   validateRaw?: (value: string) => void;
   validateParsed?: (value: T) => void;
   trim?: TrimValue;
   lazy?: boolean;
-} & (RequiredFieldOptions<T> | OptionalFieldOptions);
-
-export interface RequiredFieldOptions<T> {
   defaultValue?: T;
-  optional: false;
+  optional?: boolean;
+}
+
+export interface RequiredFieldOptions {
+  optional?: false;
 }
 
 export interface OptionalFieldOptions {
@@ -92,9 +93,8 @@ const bindAllReaders = <T extends SettingsConfig>(
       throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
     }
 
-    // If no value was found and we have a default, return that, otherwise throw
+    // Handle missing values with defaults and required/optional settings
     if (trimmedValue === undefined || trimmedValue.length === 0) {
-      //      return fieldOptions.defaultValue;
       if ('defaultValue' in fieldOptions && fieldOptions.defaultValue !== undefined) {
         return fieldOptions.defaultValue;
       }
@@ -150,7 +150,7 @@ const bindAllReaders = <T extends SettingsConfig>(
 let cacheEpoch = 0;
 export const clearEnvironmentCache = (): void => { cacheEpoch++; };
 
-export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends RequiredFieldOptions<unknown> ? ReturnType<T[key]['parser']> : (ReturnType<T[key]['parser']> | undefined))} => {
+export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOptions = {}): {[key in keyof T]: (T[key] extends OptionalFieldOptions ? (ReturnType<T[key]['parser']> | undefined) : ReturnType<T[key]['parser']>)} => {
   const readers = bindAllReaders(config, options);
 
   // Wrap the readers in a proxy object to transparently invoke them and cache the values
@@ -171,5 +171,5 @@ export const Settings = <T extends SettingsConfig>(config: T, options: GlobalOpt
 
     return cache[configKey];
   };
-  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends RequiredFieldOptions<unknown> ? ReturnType<T[key]['parser']>: (ReturnType<T[key]['parser']> | undefined))};
+  return new Proxy(readers, { get }) as {[key in keyof T]: (T[key] extends OptionalFieldOptions ? (ReturnType<T[key]['parser']> | undefined) : ReturnType<T[key]['parser']>)};
 };
