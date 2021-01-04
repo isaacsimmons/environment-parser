@@ -33,7 +33,7 @@ export type FieldOptions<T> = BasicFieldOptions<T> & {
   parser: Parser<T>;
 };
 export interface SettingsConfig {
-  [key: string]: FieldOptions<any>;
+  [key: string]: FieldOptions<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export type TrimValue = true | false | 'throw';

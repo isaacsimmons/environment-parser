@@ -54,10 +54,8 @@ test('url parser test', () => {
 });
 
 
-const intStrings = [ '1000', '-1000', '+1000', '0', '+0', '-0', '9007199254740991', '-9007199254740991' ];
 const floatStrings = [ '4.2', '.52', '0.78', '-.5', '+.5', '+3.14', '5.0', '-5.0', '+5.0' ];
-const bigIntStrings = ['9007199254740993', '-9007199254740993', '999999999999999999999999999999999999'];
-
+const bigIntStrings = [ '9007199254740993', '-9007199254740993', '999999999999999999999999999999999999' ];
 const badNumberStrings = [ '', '.', '-.', '203,2', '123foo', 'One', 'Eleventy', '1/2', 'Inf', 'NaN', '10n', '0xFF', '3.2.2', '1,000', 'MCMLXXXIV' ];
 
 test('int validation', () => {
@@ -65,7 +63,7 @@ test('int validation', () => {
     ...badNumberStrings,
     ...floatStrings,
     ...bigIntStrings,
-   ].forEach(badString => expect(() => myParseInt(badString)).toThrow());
+  ].forEach(badString => expect(() => myParseInt(badString)).toThrow());
 });
 
 test('float validation', () => {
