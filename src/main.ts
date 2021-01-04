@@ -1,4 +1,4 @@
-import { BuiltInCapitalizationStyle, fixCapitalization } from './capitalization';
+import { CapitalizationStyle, fixCapitalization } from './capitalization';
 import { ConfigError } from './error';
 import { Parser } from './parsers';
 
@@ -38,8 +38,6 @@ export interface SettingsConfig {
 
 export type TrimValue = true | false | 'throw';
 
-export type CapitalizationStyle = BuiltInCapitalizationStyle | ((configKey: string) => string);
-
 const trimValue = (value: string|undefined, trim: TrimValue): string|undefined => {
   if (value === undefined) {
     return undefined;
@@ -64,9 +62,6 @@ const getEnvKey = (configKey: string, envNameOverride: string|undefined, capital
   }
   if (capitalizationStyle === undefined) {
     return configKey;
-  }
-  if (typeof capitalizationStyle === 'function') {
-    return capitalizationStyle(configKey);
   }
   return fixCapitalization(configKey, capitalizationStyle);
 };

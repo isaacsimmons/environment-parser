@@ -1,4 +1,4 @@
-export type BuiltInCapitalizationStyle = 'UpperCamel' | 'lowerCamel' | 'UPPER_SNAKE' | 'lower_snake';
+export type CapitalizationStyle = 'UpperCamel' | 'lowerCamel' | 'UPPER_SNAKE' | 'lower_snake';
 
 // Split snake, kebab, camel etc variable names into words.
 // Single consecutive captials are treated as separate words BugInARug, but more than that are lumped together HTTPAndURLParser
@@ -8,7 +8,7 @@ const splitKeyIntoWords = (s: string): string[] =>
 const capitalizeFirst = (s: string): string =>
   s[0].toUpperCase() + s.substring(1).toLowerCase();
 
-const combineWords = (words: string[], style: BuiltInCapitalizationStyle) => {
+const combineWords = (words: string[], style: CapitalizationStyle) => {
   switch (style) {
   case 'UPPER_SNAKE':
     return words.join('_').toUpperCase();
@@ -25,5 +25,5 @@ const combineWords = (words: string[], style: BuiltInCapitalizationStyle) => {
   }
 };
 
-export const fixCapitalization = (s: string, style: BuiltInCapitalizationStyle): string =>
+export const fixCapitalization = (s: string, style: CapitalizationStyle): string =>
   combineWords(splitKeyIntoWords(s), style);

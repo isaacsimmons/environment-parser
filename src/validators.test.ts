@@ -1,7 +1,7 @@
 import {
-  FALSE_VALUES,
-  TRUE_VALUES,
-  numericValidator,
+  BOOL_FALSE_VALUES,
+  BOOL_TRUE_VALUES,
+  numericRangeCheck,
   validateBoolRaw,
   validateFloatRaw,
   validateFloatParsed,
@@ -45,12 +45,12 @@ test('float validators', () => {
 });
 
 test('boolean validators', () => {
-  [ ...TRUE_VALUES, ...FALSE_VALUES ].forEach(validateBoolRaw);
+  [ ...BOOL_TRUE_VALUES, ...BOOL_FALSE_VALUES ].forEach(validateBoolRaw);
   [ 'yes', 'Y', 'TrUe', '', 'foo' ].forEach(badBool => expect(() => validateBoolRaw(badBool)).toThrow());
 });
 
 test('numeric validator', () => {
-  const fiveToTen = numericValidator({ min: 5, max: 10 });
+  const fiveToTen = numericRangeCheck({ min: 5, max: 10 });
   [ 5, 5.0, 5.5, 8, 10, 10n, 10.0 ].forEach(fiveToTen);
   [ 4.9999, -5, 12, 50000000 ].forEach(badNumber => expect(() => fiveToTen(badNumber)).toThrow());
 });
