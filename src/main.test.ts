@@ -24,7 +24,7 @@ test('eager settings throw when missing required field', () => {
 
 test('eager settings don\'t throw when missing optional field', () => {
   const settings = Settings({
-    TEST_1: fooInt(),
+    TEST_1: fooInt({ }),
     TEST_2: fooString({ optional: true }),
     TEST_3: fooBool({ optional: true }),
   }, { lazy: false, overrides });

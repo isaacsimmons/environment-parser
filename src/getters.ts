@@ -1,38 +1,21 @@
-import { URL } from 'url';
 import { BasicFieldOptions, FieldOptions, OptionalFieldOptions } from './main';
-import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, parseString, parseUrl } from './parsers';
+import { myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, Parser, parseString, parseUrl } from './parsers';
 
-//const fooT = <T>(parser: Parser<T>) => ();
+const withParser = <TYPE>(parser: Parser<TYPE>) => <OPTIONS_TYPE extends BasicFieldOptions<TYPE>>(options?: OPTIONS_TYPE): OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<number> =>
+({
+  parser,
+  ...options,
+}) as OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<number>;
 
-export const fooInt = <T = BasicFieldOptions<number>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<number> & OptionalFieldOptions : FieldOptions<number> =>
-  ({
-    parser: myParseInt,
-    ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<number> & OptionalFieldOptions : FieldOptions<number>;
+export const fooInt = withParser(myParseInt);
 
-export const fooString = <T extends BasicFieldOptions<string>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<string> & OptionalFieldOptions : FieldOptions<string> =>
-  ({
-    parser: parseString,
-    ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<string> & OptionalFieldOptions : FieldOptions<string>;
+export const fooString = withParser(parseString);
 
-export const fooBool = <T extends BasicFieldOptions<boolean>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<boolean> & OptionalFieldOptions : FieldOptions<boolean> =>
-  ({
-    parser: parseBool,
-    ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<boolean> & OptionalFieldOptions : FieldOptions<boolean>;
+export const fooBool = withParser(parseBool);
 
-export const fooFloat = <T extends BasicFieldOptions<number>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<number> & OptionalFieldOptions : FieldOptions<number> =>
-  ({
-    parser: myParseFloat,
-    ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<number> & OptionalFieldOptions : FieldOptions<number>;
+export const fooFloat = withParser(myParseFloat);
 
-export const fooBigInt = <T extends BasicFieldOptions<BigInt>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<BigInt> & OptionalFieldOptions : FieldOptions<BigInt> =>
-  ({
-    parser: parseBigInt,
-    ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<BigInt> & OptionalFieldOptions : FieldOptions<BigInt>;
+export const fooBigInt = withParser(parseBigInt);
 
 // export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
 //   getInt({ min: 0, max: 65535, ...options });
@@ -40,10 +23,6 @@ export const fooBigInt = <T extends BasicFieldOptions<BigInt>>(options?: T): T e
 // export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): RequiredFieldOptions<number> =>
 //   requireInt({ min: 0, max: 65535, ...options });
 
-export const fooUrl = <T extends BasicFieldOptions<URL>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<URL> & OptionalFieldOptions : FieldOptions<URL> =>
-  ({ parser: parseUrl, ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<URL> & OptionalFieldOptions : FieldOptions<URL>;
+export const fooUrl = withParser(parseUrl);
 
-export const fooJson = <T extends BasicFieldOptions<JsonValue>>(options?: T): T extends OptionalFieldOptions ? FieldOptions<JsonValue> & OptionalFieldOptions : FieldOptions<JsonValue> =>
-  ({ parser: parseJson, ...options,
-  }) as T extends OptionalFieldOptions ? FieldOptions<JsonValue> & OptionalFieldOptions : FieldOptions<JsonValue>;
+export const fooJson = withParser(parseJson);
