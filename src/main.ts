@@ -98,7 +98,7 @@ const bindAllReaders = <T extends SettingsConfig>(
       if (fieldOptions.optional) {
         return undefined;
       } else {
-        throw new ConfigError('Missing required value'); // FIXME: more details in the error message
+        throw new ConfigError(`Missing required environment value: ${envKey}`);
       }
     }
 

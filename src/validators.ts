@@ -1,12 +1,5 @@
-// TODO: lose this?
-export interface NumericOptions {
-  min?: number|BigInt;
-  max?: number|BigInt;
-}
-
-// TODO: rename with BOOL_
-export const TRUE_VALUES = [ '1', 'TRUE', 'true' ];
-export const FALSE_VALUES = [ '0', 'FALSE', 'false' ];
+export const BOOL_TRUE_VALUES = [ '1', 'TRUE', 'true' ];
+export const BOOL_FALSE_VALUES = [ '0', 'FALSE', 'false' ];
 
 export const validateIntRaw = (s: string): void => {
   if (!/^[-+]?(\d+)$/.test(s)) {
@@ -44,10 +37,14 @@ export const restrictValues = <T>(values: T[]) => (value: T): void => {
   }
 };
 
-export const validateBoolRaw = restrictValues([ ...TRUE_VALUES, ...FALSE_VALUES ]);
+export const validateBoolRaw = restrictValues([ ...BOOL_TRUE_VALUES, ...BOOL_FALSE_VALUES ]);
 
-// TODO: rename to numeric range check
-export const numericValidator = ({ min, max }: NumericOptions) =>
+export interface NumericOptions {
+  min?: number|BigInt;
+  max?: number|BigInt;
+}
+
+export const numericRangeCheck = ({ min, max }: NumericOptions) =>
   (value: number|BigInt): void => {
     if (min !== undefined && value < min) {
       throw new Error(`Value ${value} less than minimum ${min}`);
