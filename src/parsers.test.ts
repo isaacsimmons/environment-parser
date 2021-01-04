@@ -1,4 +1,4 @@
-import { myParseFloat, myParseInt, parseBigInt, parseJson, parseUrl, parseBool } from './parsers';
+import { myParseFloat, myParseInt, parseBigInt, parseJson, parseUrl, parseBool, BOOL_TRUE_VALUES, BOOL_FALSE_VALUES } from './parsers';
 
 test('int parser test', () => {
   expect(myParseInt('42')).toEqual(42);
@@ -29,10 +29,8 @@ test('bigint parser test', () => {
 });
 
 test('bool parser test', () => {
-  expect(parseBool('TRUE')).toEqual(true);
-  expect(parseBool('1')).toEqual(true);
-  expect(parseBool('FALSE')).toEqual(false);
-  expect(parseBool('0')).toEqual(false);
+  BOOL_TRUE_VALUES.forEach(trueString => expect(parseBool(trueString)).toEqual(true));
+  BOOL_FALSE_VALUES.forEach(falseString => expect(parseBool(falseString)).toEqual(false));
 });
 
 test('json parser test', () => {
@@ -53,4 +51,30 @@ test('url parser test', () => {
   expect(parsedUrl2.protocol).toEqual('https:');
   expect(parsedUrl2.pathname).toEqual('/foo/bar');
   expect(parsedUrl2.search).toEqual('?baz=qux');
+});
+
+
+const intStrings = [ '1000', '-1000', '+1000', '0', '+0', '-0', '9007199254740991', '-9007199254740991' ];
+const floatStrings = [ '4.2', '.52', '0.78', '-.5', '+.5', '+3.14', '5.0', '-5.0', '+5.0' ];
+const bigIntStrings = ['9007199254740993', '-9007199254740993', '999999999999999999999999999999999999'];
+
+const badNumberStrings = [ '', '.', '-.', '203,2', '123foo', 'One', 'Eleventy', '1/2', 'Inf', 'NaN', '10n', '0xFF', '3.2.2', '1,000', 'MCMLXXXIV' ];
+
+test('int validation', () => {
+  [
+    ...badNumberStrings,
+    ...floatStrings,
+    ...bigIntStrings,
+   ].forEach(badString => expect(() => myParseInt(badString)).toThrow());
+});
+
+test('float validation', () => {
+  badNumberStrings.forEach(badString => expect(() => myParseFloat(badString)).toThrow());
+});
+
+test('bigint validation', () => {
+  [
+    ...badNumberStrings,
+    ...floatStrings,
+  ].forEach(badString => expect(() => parseBigInt(badString)).toThrow());
 });

@@ -1,6 +1,6 @@
 import { getInt, getBool, getString } from './getters';
 import { clearEnvironmentCache, Settings } from './main';
-import { validateBase64Raw as validateBase64 } from './validators';
+import { validateBase64 } from './validators';
 
 const overrides = { TEST_1: '3', TEST_2: 'foo' };
 
