@@ -1,5 +1,6 @@
 import { getInt, getBool, getString } from './getters';
 import { clearEnvironmentCache, Settings } from './main';
+import { validateBase64Raw as validateBase64 } from './validators';
 
 const overrides = { TEST_1: '3', TEST_2: 'foo' };
 
@@ -70,6 +71,16 @@ test('individual eager settings throw when not accessed', () => {
   }).toThrow();
 });
 
+test('individual settings default to eager and throw when not accessed', () => {
+  expect(() => {
+    Settings({
+      TEST_1: getInt({ optional: false }),
+      TEST_2: getString(),
+      TEST_3: getBool({ lazy: false, optional: false }),
+    }, { overrides });
+  }).toThrow();
+});
+
 test('lazy settings throws when missing required value accessed', () => {
   expect(() => {
     const settings = Settings({
@@ -100,13 +111,22 @@ test('lazy settings don\'t throw when missing required value has default', () =>
   expect(settings.TEST_3).toEqual(true);
 });
 
-test('key rename test', () => {
+test('Renames environment keys in bulk', () => {
   const settings = Settings({
     test1: getInt(),
     test2: getString({ optional: true }),
-  }, { lazy: false, envStyle: 'UPPER_SNAKE', overrides });
+  }, { envStyle: 'UPPER_SNAKE', overrides });
   expect(settings.test1).toEqual(3);
   expect(settings.test2).toEqual('foo');
+});
+
+test('Renames individual environment keys', () => {
+  const settings = Settings({
+    TEST_1: getInt(),
+    foo: getString({ optional: true, envName: 'TEST_2' }),
+  }, { overrides });
+  expect(settings.TEST_1).toEqual(3);
+  expect(settings.foo).toEqual('foo');
 });
 
 test('env values are cached', ()=> {
@@ -145,5 +165,32 @@ test('lazy parsing behavior when environment override is specified', ()=> {
   }
 });
 
-// TODO: test individual field envKey overrides
-// TODO: validation does not run against default values
+test('Doesn\'t throw when values are allowed by additional validators', () => {
+  const settings = Settings({
+    TEST_1: getString({validateParsed: validateBase64}),
+  }, { overrides: {TEST_1: 'SEVMTE8='} });
+  expect(settings.TEST_1).toEqual('SEVMTE8=');
+});
+
+test('Throws when additional validators are provided and the values are invalid', () => {
+  expect(() => {
+    Settings({
+      TEST_1: getString({validateRaw: validateBase64}),
+    }, { overrides: {TEST_1: 'not base64'} });  
+  }).toThrow();
+});
+
+test('Throws when additional validators are provided and the values are invalid even if optional', () => {
+  expect(() => {
+    Settings({
+      TEST_1: getString({validateRaw: validateBase64, optional: true}),
+    }, { overrides: {TEST_1: 'not base64'} });  
+  }).toThrow();
+});
+
+test('Doesn\'t run additional validators against default values', () => {
+  const settings = Settings({
+    TEST_1: getString({validateParsed: validateBase64, defaultValue: 'invalid base64'}),
+  });
+  expect(settings.TEST_1).toEqual('invalid base64');
+});

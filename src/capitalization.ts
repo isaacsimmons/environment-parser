@@ -8,7 +8,6 @@ const splitKeyIntoWords = (s: string): string[] =>
 const capitalizeFirst = (s: string): string =>
   s[0].toUpperCase() + s.substring(1).toLowerCase();
 
-// TODO: locale-specific rules for upperCase/lowerCase? how to specify?
 const combineWords = (words: string[], style: BuiltInCapitalizationStyle) => {
   switch (style) {
   case 'UPPER_SNAKE':
