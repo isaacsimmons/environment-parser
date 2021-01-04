@@ -18,6 +18,8 @@ const settings = Settings({
 });
 ```
 
+SEND IMPORT STYLE OPTIONS TO BRENT and MARK
+
 The resulting object would draw its values from the environment keys `FOO`, `BAR`, and `BAZ` and have the type:
  ```typescript
 {
@@ -53,7 +55,7 @@ Such functions should return no value but throw an Error if the value is invalid
 ### Environment Keys
 
 If you want the config object keys to draw from environment variables with different names, there are two options.
-The environment key to draw any individual field's value from can be set with the "envKey" option (e.g. `TEST_1: requireInt({envKey: 'TEST_ONE'}),`).
+The environment key to draw any individual field's value from can be set with the "envKey" option (e.g. `TEST_1: getInt({envKey: 'TEST_ONE'}),`).
 Additionally, the keys for the entire object can be overridden at once if you want uniformly use a different capitalization style.
 For instance, the following settings object
 ```typescript
