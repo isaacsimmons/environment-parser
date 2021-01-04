@@ -25,10 +25,6 @@ export interface BasicFieldOptions<T> {
   optional?: boolean;
 }
 
-export interface RequiredFieldOptions {
-  optional?: false;
-}
-
 export interface OptionalFieldOptions {
   optional: true;
 }
