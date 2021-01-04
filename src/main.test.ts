@@ -82,13 +82,13 @@ test('individual settings default to eager and throw when not accessed', () => {
 });
 
 test('lazy settings throws when missing required value accessed', () => {
+  const settings = Settings({
+    TEST_1: getInt(),
+    TEST_2: getString({ optional: true }),
+    TEST_3: getBool({ optional: false }),
+  }, { lazy: true, overrides });
   expect(() => {
-    const settings = Settings({
-      TEST_1: getInt(),
-      TEST_2: getString({ optional: true }),
-      TEST_3: getBool({ optional: false }),
-    }, { lazy: true, overrides });
-      // Just access the value without doing anything to it
+    // Just access the value without doing anything to it
     settings.TEST_3;
   }).toThrow();
 });
@@ -167,30 +167,30 @@ test('lazy parsing behavior when environment override is specified', ()=> {
 
 test('Doesn\'t throw when values are allowed by additional validators', () => {
   const settings = Settings({
-    TEST_1: getString({validateParsed: validateBase64}),
-  }, { overrides: {TEST_1: 'SEVMTE8='} });
+    TEST_1: getString({ validateParsed: validateBase64 }),
+  }, { overrides: { TEST_1: 'SEVMTE8=' } });
   expect(settings.TEST_1).toEqual('SEVMTE8=');
 });
 
 test('Throws when additional validators are provided and the values are invalid', () => {
   expect(() => {
     Settings({
-      TEST_1: getString({validateRaw: validateBase64}),
-    }, { overrides: {TEST_1: 'not base64'} });  
+      TEST_1: getString({ validateRaw: validateBase64 }),
+    }, { overrides: { TEST_1: 'not base64' } });
   }).toThrow();
 });
 
 test('Throws when additional validators are provided and the values are invalid even if optional', () => {
   expect(() => {
     Settings({
-      TEST_1: getString({validateRaw: validateBase64, optional: true}),
-    }, { overrides: {TEST_1: 'not base64'} });  
+      TEST_1: getString({ validateRaw: validateBase64, optional: true }),
+    }, { overrides: { TEST_1: 'not base64' } });
   }).toThrow();
 });
 
 test('Doesn\'t run additional validators against default values', () => {
   const settings = Settings({
-    TEST_1: getString({validateParsed: validateBase64, defaultValue: 'invalid base64'}),
+    TEST_1: getString({ validateParsed: validateBase64, defaultValue: 'invalid base64' }),
   });
   expect(settings.TEST_1).toEqual('invalid base64');
 });
