@@ -175,7 +175,7 @@ test('Doesn\'t throw when values are allowed by additional validators', () => {
 test('Throws when additional validators are provided and the values are invalid', () => {
   expect(() => {
     Settings({
-      TEST_1: getString({ validateRaw: validateBase64 }),
+      TEST_1: getString({ validate: validateBase64 }),
     }, { overrides: { TEST_1: 'not base64' } });
   }).toThrow();
 });
@@ -183,7 +183,7 @@ test('Throws when additional validators are provided and the values are invalid'
 test('Throws when additional validators are provided and the values are invalid even if optional', () => {
   expect(() => {
     Settings({
-      TEST_1: getString({ validateRaw: validateBase64, optional: true }),
+      TEST_1: getString({ validate: validateBase64, optional: true }),
     }, { overrides: { TEST_1: 'not base64' } });
   }).toThrow();
 });

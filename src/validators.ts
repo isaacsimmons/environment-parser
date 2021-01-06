@@ -26,4 +26,4 @@ export const validateRange = ({ min, max }: Range) =>
     }
   };
 
-export const validatePort = validateRange({min: 0, max: 65535});
+export const validatePort = validateRange({ min: 0, max: 65535 });

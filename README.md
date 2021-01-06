@@ -49,7 +49,7 @@ This behavior can be altered to only throw when someone attempts to access an in
 ### Extensibility
 
 In addition to the built-in types and validators user-defined validators can be provided as well.
-Additional validation steps can be added to any (new or existing) helper by providing validation functions in the field-level options for `validateParsed` or `validateRaw`, depending on if you would like to validate the pre-parsed string value from the environment or the post-parsing value.
+An additional validation step can be added to any (new or existing) helper by providing a validation function in the field-level option `validate`.
 Such functions should return no value but throw an Error if the value is invalid.
 
 ### Environment Keys

@@ -1,11 +1,11 @@
 import {
-  numericRangeCheck,
+  validateRange,
   restrictValues,
   validateBase64,
 } from './validators';
 
 test('numeric validator', () => {
-  const fiveToTen = numericRangeCheck({ min: 5, max: 10 });
+  const fiveToTen = validateRange({ min: 5, max: 10 });
   [ 5, 5.0, 5.5, 8, 10, 10n, 10.0 ].forEach(fiveToTen);
   [ 4.9999, -5, 12, 50000000 ].forEach(badNumber => expect(() => fiveToTen(badNumber)).toThrow());
 });

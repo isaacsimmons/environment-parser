@@ -2,24 +2,21 @@ import { CapitalizationStyle, fixCapitalization } from './capitalization';
 import { ConfigError } from './error';
 import { Parser } from './parsers';
 
-// TODO: standardize language -- Settings vs. Config
-
 export interface EnvironmentOverrides {
   [envKey: string]: string;
 }
 
 export interface GlobalOptions {
   envStyle?: CapitalizationStyle;
-  trim?: TrimValue;
+  trim?: TrimPolicy;
   lazy?: boolean;
   overrides?: EnvironmentOverrides;
 }
 
 export interface BasicFieldOptions<T> {
   envName?: string;
-  validateRaw?: (value: string) => void;
-  validateParsed?: (value: T) => void;
-  trim?: TrimValue;
+  validate?: (value: T) => void;
+  trim?: TrimPolicy;
   lazy?: boolean;
   defaultValue?: T;
   optional?: boolean;
@@ -33,12 +30,13 @@ export type FieldOptions<T> = BasicFieldOptions<T> & {
   parser: Parser<T>;
 };
 export interface SettingsConfig {
-  [key: string]: FieldOptions<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: FieldOptions<any>;
 }
 
-export type TrimValue = true | false | 'throw';
+export type TrimPolicy = true | false | 'throw';
 
-const trimValue = (value: string|undefined, trim: TrimValue): string|undefined => {
+const trimValue = (value: string|undefined, trim: TrimPolicy): string|undefined => {
   if (value === undefined) {
     return undefined;
   }
@@ -97,15 +95,6 @@ const bindAllReaders = <T extends SettingsConfig>(
       }
     }
 
-    // Validate the string before parsing
-    if (fieldOptions.validateRaw) {
-      try {
-        fieldOptions.validateRaw(trimmedValue);
-      } catch (err) {
-        throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
-      }
-    }
-
     // Parse the string into the final value
     let parsedValue: F;
     try {
@@ -114,7 +103,7 @@ const bindAllReaders = <T extends SettingsConfig>(
       throw new ConfigError(err, `Error parsing config value for ${envKey}`);
     }
 
-    // Validate the post-parsing result as well
+    // Optional validation
     if (fieldOptions.validateParsed) {
       try {
         fieldOptions.validateParsed(parsedValue);
