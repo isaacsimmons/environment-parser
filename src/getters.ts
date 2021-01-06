@@ -1,11 +1,11 @@
 import { BasicFieldOptions, FieldOptions, OptionalFieldOptions } from './main';
 import { myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, Parser, parseString, parseUrl } from './parsers';
 
-const withParser = <TYPE>(parser: Parser<TYPE>) => <OPTIONS_TYPE extends BasicFieldOptions<TYPE>>(options?: OPTIONS_TYPE): OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<number> =>
+const withParser = <TYPE>(parser: Parser<TYPE>) => <OPTIONS_TYPE extends BasicFieldOptions<TYPE>>(options?: OPTIONS_TYPE): OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<TYPE> =>
 ({
   parser,
   ...options,
-}) as OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<number>;
+}) as OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<TYPE>;
 
 export const getInt = withParser(myParseInt);
 
@@ -16,12 +16,6 @@ export const getBool = withParser(parseBool);
 export const getFloat = withParser(myParseFloat);
 
 export const getBigInt = withParser(parseBigInt);
-
-// export const getPort = (options: BasicOptionalFieldOptions<number> = {}): OptionalFieldOptions<number> =>
-//   getInt({ min: 0, max: 65535, ...options });
-
-// export const requirePort = (options: BasicRequiredFieldOptions<number> = {}): RequiredFieldOptions<number> =>
-//   requireInt({ min: 0, max: 65535, ...options });
 
 export const getUrl = withParser(parseUrl);
 

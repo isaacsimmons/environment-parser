@@ -11,12 +11,12 @@ export const restrictValues = <T>(values: T[]) => (value: T): void => {
   }
 };
 
-export interface NumericOptions {
+export interface Range {
   min?: number|BigInt;
   max?: number|BigInt;
 }
 
-export const numericRangeCheck = ({ min, max }: NumericOptions) =>
+export const validateRange = ({ min, max }: Range) =>
   (value: number|BigInt): void => {
     if (min !== undefined && value < min) {
       throw new Error(`Value ${value} less than minimum ${min}`);
@@ -25,3 +25,5 @@ export const numericRangeCheck = ({ min, max }: NumericOptions) =>
       throw new Error(`Value ${value} greater than maximum ${max}`);
     }
   };
+
+export const validatePort = validateRange({min: 0, max: 65535});
