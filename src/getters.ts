@@ -1,22 +1,66 @@
-import { BasicFieldOptions, FieldOptions, OptionalFieldOptions } from './main';
-import { myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, Parser, parseString, parseUrl } from './parsers';
+import { URL } from 'url';
+import { BasicFieldOptions, FieldOptions, OptionalFieldOptions, RequiredFieldOptions } from './main';
+import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, Parser, parseString, parseUrl } from './parsers';
 
-const withParser = <TYPE>(parser: Parser<TYPE>) => <OPTIONS_TYPE extends BasicFieldOptions<TYPE>>(options?: OPTIONS_TYPE): OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<TYPE> =>
-({
-  parser,
-  ...options,
-}) as OPTIONS_TYPE extends OptionalFieldOptions ? FieldOptions<TYPE> & OptionalFieldOptions : FieldOptions<TYPE>;
+export function getInt(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
+export function getInt(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
+export function getInt(options?: BasicFieldOptions<number> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<number>} {
+  return {
+    parser: myParseInt,
+    ...options,
+  };
+}
 
-export const getInt = withParser(myParseInt);
+export function getString(options?: BasicFieldOptions<string> & RequiredFieldOptions): FieldOptions<string>;
+export function getString(options: BasicFieldOptions<string> & OptionalFieldOptions): FieldOptions<string> & OptionalFieldOptions;
+export function getString(options?: BasicFieldOptions<string> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<string>} {
+  return {
+    parser: parseString,
+    ...options,
+  };
+}
 
-export const getString = withParser(parseString);
+export function getFloat(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
+export function getFloat(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
+export function getFloat(options?: BasicFieldOptions<number> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<number>} {
+  return {
+    parser: myParseFloat,
+    ...options,
+  };
+}
 
-export const getBool = withParser(parseBool);
+export function getBool(options?: BasicFieldOptions<boolean> & RequiredFieldOptions): FieldOptions<boolean>;
+export function getBool(options: BasicFieldOptions<boolean> & OptionalFieldOptions): FieldOptions<boolean> & OptionalFieldOptions;
+export function getBool(options?: BasicFieldOptions<boolean> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<boolean>} {
+  return {
+    parser: parseBool,
+    ...options,
+  };
+}
 
-export const getFloat = withParser(myParseFloat);
+export function getBigInt(options?: BasicFieldOptions<BigInt> & RequiredFieldOptions): FieldOptions<BigInt>;
+export function getBigInt(options: BasicFieldOptions<BigInt> & OptionalFieldOptions): FieldOptions<BigInt> & OptionalFieldOptions;
+export function getBigInt(options?: BasicFieldOptions<BigInt> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<BigInt>} {
+  return {
+    parser: parseBigInt,
+    ...options,
+  };
+}
 
-export const getBigInt = withParser(parseBigInt);
+export function getUrl(options?: BasicFieldOptions<URL> & RequiredFieldOptions): FieldOptions<URL>;
+export function getUrl(options: BasicFieldOptions<URL> & OptionalFieldOptions): FieldOptions<URL> & OptionalFieldOptions;
+export function getUrl(options?: BasicFieldOptions<URL> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<URL>} {
+  return {
+    parser: parseUrl,
+    ...options,
+  };
+}
 
-export const getUrl = withParser(parseUrl);
-
-export const getJson = withParser(parseJson);
+export function getJson(options?: BasicFieldOptions<JsonValue> & RequiredFieldOptions): FieldOptions<JsonValue>;
+export function getJson(options: BasicFieldOptions<JsonValue> & OptionalFieldOptions): FieldOptions<JsonValue> & OptionalFieldOptions;
+export function getJson(options?: BasicFieldOptions<JsonValue> & (RequiredFieldOptions | OptionalFieldOptions)): typeof options & {parser: Parser<JsonValue>} {
+  return {
+    parser: parseJson,
+    ...options,
+  };
+}

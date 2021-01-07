@@ -19,16 +19,20 @@ export interface BasicFieldOptions<T> {
   trim?: TrimPolicy;
   lazy?: boolean;
   defaultValue?: T;
-  optional?: boolean;
 }
 
 export interface OptionalFieldOptions {
   optional: true;
 }
 
-export type FieldOptions<T> = BasicFieldOptions<T> & {
+export interface RequiredFieldOptions {
+  optional?: false;
+}
+export interface FieldOptions<T> extends BasicFieldOptions<T> {
   parser: Parser<T>;
-};
+  optional?: boolean;
+}
+
 export interface SettingsConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: FieldOptions<any>;
@@ -104,9 +108,9 @@ const bindAllReaders = <T extends SettingsConfig>(
     }
 
     // Optional validation
-    if (fieldOptions.validateParsed) {
+    if (fieldOptions.validate) {
       try {
-        fieldOptions.validateParsed(parsedValue);
+        fieldOptions.validate(parsedValue);
       } catch (err) {
         throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
       }

@@ -167,7 +167,7 @@ test('lazy parsing behavior when environment override is specified', ()=> {
 
 test('Doesn\'t throw when values are allowed by additional validators', () => {
   const settings = Settings({
-    TEST_1: getString({ validateParsed: validateBase64 }),
+    TEST_1: getString({ validate: validateBase64 }),
   }, { overrides: { TEST_1: 'SEVMTE8=' } });
   expect(settings.TEST_1).toEqual('SEVMTE8=');
 });
@@ -190,7 +190,7 @@ test('Throws when additional validators are provided and the values are invalid 
 
 test('Doesn\'t run additional validators against default values', () => {
   const settings = Settings({
-    TEST_1: getString({ validateParsed: validateBase64, defaultValue: 'invalid base64' }),
+    TEST_1: getString({ validate: validateBase64, defaultValue: 'invalid base64' }),
   });
   expect(settings.TEST_1).toEqual('invalid base64');
 });
