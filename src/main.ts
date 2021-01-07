@@ -19,6 +19,7 @@ export interface BasicFieldOptions<T> {
   trim?: TrimPolicy;
   lazy?: boolean;
   defaultValue?: T;
+  optional?: boolean;
 }
 
 export interface OptionalFieldOptions {
@@ -30,7 +31,6 @@ export interface RequiredFieldOptions {
 }
 export interface FieldOptions<T> extends BasicFieldOptions<T> {
   parser: Parser<T>;
-  optional?: boolean;
 }
 
 export interface SettingsConfig {

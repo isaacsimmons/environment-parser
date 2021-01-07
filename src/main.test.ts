@@ -153,7 +153,7 @@ test('lazy parsing behavior when environment override is specified', ()=> {
   process.env.ENVIRONMENT_PARSER_ALL_LAZY = '1';
   try {
     const settings = Settings({
-      TEST_1: getInt(),
+      TEST_1: getInt({ optional: false }),
       TEST_2: getString({ optional: true }),
       TEST_3: getBool(),
     }, { lazy: false, overrides });
