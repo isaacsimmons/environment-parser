@@ -9,33 +9,34 @@ It can be used in JavaScript projects but is written in [typescript](https://www
 The most common use case involves importing the `Settings` function and invoking it with SettingsConfig object.
 
 ```typescript
-import { Settings } from 'environment-parser';
+import { Settings, envType, validateRange } from 'environment-parser';
 
 const settings = Settings({
-    FOO: getString(),
-    BAR: getInt({optional: true}),
-    BAZ: getBool({defaultValue: false}),
+    JWT_SECRET: envType.string({optional:true}),
+    DB_PORT: envType.int({validate: validateRange(0, 65535)}),
+    USE_SSL: envType.bool({defaultValue: false}),
+    DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
 });
 ```
 
-SEND IMPORT STYLE OPTIONS TO BRENT and MARK
-
-The resulting object would draw its values from the environment keys `FOO`, `BAR`, and `BAZ` and have the type:
+The resulting object would draw its values from the environment keys `JWT_SECRET`, `DB_PORT`, `USE_SSL`, and `DEFAULT_CATEGORIES` and have the type:
  ```typescript
 {
-    FOO: string;
-    BAR: number | undefined;
-    BAZ: boolean;
+    JWT_SECRET: string | undefined;
+    DB_PORT: number;
+    USE_SSL: boolean;
+    DEFAULT_CATEGORIES: string[];
 }
 ```
-The the parsers return type will have `| undefined` added to it if `optional: true` is present in the options object.
-Any helper method can have a "defaultValue" which will be used in the case that the expected property is either not found in the environment or empty.
+The the parser's return type will have `| undefined` added to its type if `optional: true` is in the parameters.
+The `envType` object has several helper methods useful for generating the required `FieldConfig` objects, but they can also be created directly if you wish to use custom parser functions.
+Any field config can have a "defaultValue" which will be used in the case that the expected property is either not found in the environment or empty.
 Having any properties that aren't marked "optional" and which have no default value will throw an error if value isn't present in the environment.
 
 ### Validation
 
 In addition to making values "optional" or not (required), the numeric and boolean helpers come with a batch of built-in validators.
-If invalid values are passed (non-integer environment values matching a `getInt()` property key for instance) the package will raise an error.
+If invalid values are passed (non-integer environment values matching a `envType.int()` property key for instance) the package will raise an error.
 Boolean environment values must be one of the following strings: `1`, `TRUE`, `true`, `0`, `FALSE`, `false`.
 All values read from the environment will have leading and trailing whitespace trimmed by default.
 You can prevent that behavior (or cause it to throw a validation error instead) with either a field-level or global config value of `{trim: true}`, `{trim: false}`, or `{trim: 'throw'}`.
@@ -55,13 +56,13 @@ Such functions should return no value but throw an Error if the value is invalid
 ### Environment Keys
 
 If you want the config object keys to draw from environment variables with different names, there are two options.
-The environment key to draw any individual field's value from can be set with the "envKey" option (e.g. `TEST_1: getInt({envKey: 'TEST_ONE'}),`).
+The environment key to draw any individual field's value from can be set with the "envKey" option (e.g. `TEST_1: envType.int({envKey: 'TEST_ONE'}),`).
 Additionally, the keys for the entire object can be overridden at once if you want uniformly use a different capitalization style.
 For instance, the following settings object
 ```typescript
 const settings = Settings({
-    dbHost: getString(),
-    dbPort: getInt({default: 5432}),
+    dbHost: envType.tring(),
+    dbPort: envType.int({default: 5432}),
 }, {envStyle: 'lower_snake'});
 ```
 will draw its values from the environment variables `db_host` and `db_port` rather than `dbHost` and `dbPort`.

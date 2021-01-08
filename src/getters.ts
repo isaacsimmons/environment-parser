@@ -1,66 +1,76 @@
 import { URL } from 'url';
 import { BasicFieldOptions, FieldOptions, OptionalFieldOptions, RequiredFieldOptions } from './main';
-import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, Parser, parseString, parseUrl } from './parsers';
+import { JsonValue, myParseFloat, myParseInt, parseBigInt, parseBool, parseJson, parseString, parseUrl } from './parsers';
 
-export function getInt(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
-export function getInt(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
-export function getInt(options?: BasicFieldOptions<number>): FieldOptions<number> {
+function getInt(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
+function getInt(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
+function getInt(options?: BasicFieldOptions<number>): FieldOptions<number> {
   return {
     parser: myParseInt,
     ...options,
   };
 }
 
-export function getString(options?: BasicFieldOptions<string> & RequiredFieldOptions): FieldOptions<string>;
-export function getString(options: BasicFieldOptions<string> & OptionalFieldOptions): FieldOptions<string> & OptionalFieldOptions;
-export function getString(options?: BasicFieldOptions<string>): FieldOptions<string> {
+function getString(options?: BasicFieldOptions<string> & RequiredFieldOptions): FieldOptions<string>;
+function getString(options: BasicFieldOptions<string> & OptionalFieldOptions): FieldOptions<string> & OptionalFieldOptions;
+function getString(options?: BasicFieldOptions<string>): FieldOptions<string> {
   return {
     parser: parseString,
     ...options,
   };
 }
 
-export function getFloat(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
-export function getFloat(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
-export function getFloat(options?: BasicFieldOptions<number>): FieldOptions<number> {
+function getFloat(options?: BasicFieldOptions<number> & RequiredFieldOptions): FieldOptions<number>;
+function getFloat(options: BasicFieldOptions<number> & OptionalFieldOptions): FieldOptions<number> & OptionalFieldOptions;
+function getFloat(options?: BasicFieldOptions<number>): FieldOptions<number> {
   return {
     parser: myParseFloat,
     ...options,
   };
 }
 
-export function getBool(options?: BasicFieldOptions<boolean> & RequiredFieldOptions): FieldOptions<boolean>;
-export function getBool(options: BasicFieldOptions<boolean> & OptionalFieldOptions): FieldOptions<boolean> & OptionalFieldOptions;
-export function getBool(options?: BasicFieldOptions<boolean>): FieldOptions<boolean> {
+function getBool(options?: BasicFieldOptions<boolean> & RequiredFieldOptions): FieldOptions<boolean>;
+function getBool(options: BasicFieldOptions<boolean> & OptionalFieldOptions): FieldOptions<boolean> & OptionalFieldOptions;
+function getBool(options?: BasicFieldOptions<boolean>): FieldOptions<boolean> {
   return {
     parser: parseBool,
     ...options,
   };
 }
 
-export function getBigInt(options?: BasicFieldOptions<BigInt> & RequiredFieldOptions): FieldOptions<BigInt>;
-export function getBigInt(options: BasicFieldOptions<BigInt> & OptionalFieldOptions): FieldOptions<BigInt> & OptionalFieldOptions;
-export function getBigInt(options?: BasicFieldOptions<BigInt>): FieldOptions<BigInt> {
+function getBigInt(options?: BasicFieldOptions<BigInt> & RequiredFieldOptions): FieldOptions<BigInt>;
+function getBigInt(options: BasicFieldOptions<BigInt> & OptionalFieldOptions): FieldOptions<BigInt> & OptionalFieldOptions;
+function getBigInt(options?: BasicFieldOptions<BigInt>): FieldOptions<BigInt> {
   return {
     parser: parseBigInt,
     ...options,
   };
 }
 
-export function getUrl(options?: BasicFieldOptions<URL> & RequiredFieldOptions): FieldOptions<URL>;
-export function getUrl(options: BasicFieldOptions<URL> & OptionalFieldOptions): FieldOptions<URL> & OptionalFieldOptions;
-export function getUrl(options?: BasicFieldOptions<URL>): FieldOptions<URL> {
+function getUrl(options?: BasicFieldOptions<URL> & RequiredFieldOptions): FieldOptions<URL>;
+function getUrl(options: BasicFieldOptions<URL> & OptionalFieldOptions): FieldOptions<URL> & OptionalFieldOptions;
+function getUrl(options?: BasicFieldOptions<URL>): FieldOptions<URL> {
   return {
     parser: parseUrl,
     ...options,
   };
 }
 
-export function getJson(options?: BasicFieldOptions<JsonValue> & RequiredFieldOptions): FieldOptions<JsonValue>;
-export function getJson(options: BasicFieldOptions<JsonValue> & OptionalFieldOptions): FieldOptions<JsonValue> & OptionalFieldOptions;
-export function getJson(options?: BasicFieldOptions<JsonValue>): FieldOptions<JsonValue> {
+function getJson(options?: BasicFieldOptions<JsonValue> & RequiredFieldOptions): FieldOptions<JsonValue>;
+function getJson(options: BasicFieldOptions<JsonValue> & OptionalFieldOptions): FieldOptions<JsonValue> & OptionalFieldOptions;
+function getJson(options?: BasicFieldOptions<JsonValue>): FieldOptions<JsonValue> {
   return {
     parser: parseJson,
     ...options,
   };
 }
+
+export const envType = {
+  int: getInt,
+  float: getFloat,
+  bigInt: getBigInt,
+  bool: getBool,
+  url: getUrl,
+  json: getJson,
+  string: getString,
+};
