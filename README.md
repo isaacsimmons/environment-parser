@@ -2,11 +2,11 @@
 
 Enviromnemt parser is designed to aid in reading configuration parameters from environment variables in [Node.js](https://nodejs.org/) projects.
 It provides a framework for parsing and validating those values with a broad range of default parsers and validators in addition to allowing user-provided extensions.
-It can be used in JavaScript projects but is written in [typescript](https://www.typescriptlang.org/) and provides built-in types for use there.
+It can be used in JavaScript projects but is written in [TypeScript](https://www.typescriptlang.org/) and provides built-in types for use there.
 
 ## Usage
 
-The most common use case involves importing the `Settings` function and invoking it with SettingsConfig object.
+The base use case involves importing the `Settings` function and invoking it with SettingsConfig object.
 
 ```typescript
 import { Settings, envType, validateRange } from 'environment-parser';
