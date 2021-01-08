@@ -92,7 +92,5 @@ Run `yarn lint` to check for lint errors, `yarn lint --fix` to attempt to automa
 ### Building and Publishing
 
 Build artifacts (`*.js`, `*.d.ts`) can be compiled from the typescript sources with `yarn build`.
-They can be removed with `yarn clean`.
-// publish to NPM
-
-Semver? Releases?
+They can be removed with `yarn clean` (and you should run clean before building a publication candidate).
+New versions can be published to npm with `yarn publish`.
