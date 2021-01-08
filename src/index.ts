@@ -1,6 +1,5 @@
 // Barrel file
 export * from './capitalization';
-export * from './error';
 export * from './getters';
 export * from './main';
 export * from './parsers';

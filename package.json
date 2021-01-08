@@ -7,19 +7,18 @@
   "author": "Isaac Simmons <isaac.simmons@gmail.com>",
   "license": "ISC",
   "private": false,
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint src/*.ts",
     "test": "jest",
     "build": "tsc",
     "clean": "git clean -fXd -e \\!node_modules -e \\!node_modules/**/*"
   },
-  "dependencies": {
-    "verror": "^1.10.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^26.0.19",
-    "@types/verror": "^1.10.4",
     "@types/node": "^14.14.13",
     "@typescript-eslint/eslint-plugin": "^4.10.0",
     "@typescript-eslint/parser": "^4.10.0",

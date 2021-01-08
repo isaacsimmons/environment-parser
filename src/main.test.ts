@@ -23,14 +23,6 @@ test('eager settings throw when missing required field', () => {
   }).toThrow();
 });
 
-const settings = Settings({
-  JWT_SECRET: envType.string({optional:true}),
-  DB_PORT: envType.int(),
-  USE_SSL: envType.bool({defaultValue: false}),
-  DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
-});
-
-
 test('eager settings don\'t throw when missing optional field', () => {
   const settings = Settings({
     TEST_1: envType.int({ }),

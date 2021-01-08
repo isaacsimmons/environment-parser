@@ -1,5 +1,4 @@
 import { CapitalizationStyle, fixCapitalization } from './capitalization';
-import { ConfigError } from './error';
 import { Parser } from './parsers';
 
 export interface EnvironmentOverrides {
@@ -54,7 +53,7 @@ const trimValue = (value: string|undefined, trim: TrimPolicy): string|undefined 
     if (value === value.trim()) {
       return value;
     }
-    throw new ConfigError(`Illegal whitespace on config value: "${value}"`);
+    throw new Error(`Illegal whitespace on config value: "${value}"`);
   }
 };
 
@@ -83,7 +82,7 @@ const bindAllReaders = <T extends SettingsConfig>(
     try {
       trimmedValue = trimValue(rawValue, fieldOptions.trim ?? globalOptions.trim ?? true);
     } catch (err) {
-      throw new ConfigError(err, `Error validating raw config value for ${envKey}`);
+      throw new Error(`Error validating raw config value for ${envKey}: ${err.message}`);
     }
 
     // Handle missing values with defaults and required/optional settings
@@ -95,7 +94,7 @@ const bindAllReaders = <T extends SettingsConfig>(
       if (fieldOptions.optional) {
         return undefined;
       } else {
-        throw new ConfigError(`Missing required environment value: ${envKey}`);
+        throw new Error(`Missing required environment value: ${envKey}`);
       }
     }
 
@@ -104,7 +103,7 @@ const bindAllReaders = <T extends SettingsConfig>(
     try {
       parsedValue = fieldOptions.parser(trimmedValue);
     } catch (err) {
-      throw new ConfigError(err, `Error parsing config value for ${envKey}`);
+      throw new Error(`Error parsing config value for ${envKey}: ${err.message}`);
     }
 
     // Optional validation
@@ -112,7 +111,7 @@ const bindAllReaders = <T extends SettingsConfig>(
       try {
         fieldOptions.validate(parsedValue);
       } catch (err) {
-        throw new ConfigError(err, `Error validating parsed config value for ${envKey}`);
+        throw new Error(`Error validating parsed config value for ${envKey}: ${err.message}`);
       }
     }
 
