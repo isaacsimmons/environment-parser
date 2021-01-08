@@ -10,6 +10,8 @@
   "files": [
     "dist"
   ],
+  "keywords": ["environment", "process.env"],
+  "repository": "github:isaacsimmons/environment-parser.git",
   "scripts": {
     "lint": "eslint src/*.ts",
     "test": "jest",
