@@ -13,7 +13,7 @@ import { Settings, envType, validateRange } from 'environment-parser';
 
 const settings = Settings({
     JWT_SECRET: envType.string({optional:true}),
-    DB_PORT: envType.int({validate: validateRange(0, 65535)}),
+    DB_PORT: envType.int({validate: validateRange({min: 0, max: 65535})}),
     USE_SSL: envType.bool({defaultValue: false}),
     DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
 });

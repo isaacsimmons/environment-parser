@@ -1,6 +1,6 @@
 import { envType } from './getters';
 import { clearEnvironmentCache, Settings } from './main';
-import { validateBase64 } from './validators';
+import { validateBase64, validateRange } from './validators';
 
 const overrides = { TEST_1: '3', TEST_2: 'foo' };
 
@@ -195,4 +195,44 @@ test('Doesn\'t run additional validators against default values', () => {
   expect(settings.TEST_1).toEqual('invalid base64');
 });
 
-// TODO: some other getter types?
+test('README example accepts valid port range', () => {
+  const settings = Settings({
+    JWT_SECRET: envType.string({optional:true}),
+    DB_PORT: envType.int({validate: validateRange({min: 0, max: 65535})}),
+    USE_SSL: envType.bool({defaultValue: false}),
+    DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
+  }, {overrides: {DB_PORT: '5432'}});
+  expect(settings.DB_PORT).toEqual(5432);      
+});
+
+test('README example rejects invalid port range', () => {
+  expect(() => {
+    Settings({
+      JWT_SECRET: envType.string({optional:true}),
+      DB_PORT: envType.int({validate: validateRange({min: 0, max: 65535})}),
+      USE_SSL: envType.bool({defaultValue: false}),
+      DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
+    }, {overrides: {DB_PORT: '543210'}});
+    }).toThrow();
+
+});
+
+test('README example parses default categories', () => {
+  const settings = Settings({
+    JWT_SECRET: envType.string({optional:true}),
+    DB_PORT: envType.int({validate: validateRange({min: 0, max: 65535})}),
+    USE_SSL: envType.bool({defaultValue: false}),
+    DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
+  }, {overrides: {DB_PORT: '5432', DEFAULT_CATEGORIES: 'abc def ghi'}});
+  expect(settings.DEFAULT_CATEGORIES).toEqual(['abc', 'def', 'ghi']);    
+});
+
+test('README example uses defaults correctly', () => {
+  const settings = Settings({
+    JWT_SECRET: envType.string({optional:true}),
+    DB_PORT: envType.int({validate: validateRange({min: 0, max: 65535})}),
+    USE_SSL: envType.bool({defaultValue: false}),
+    DEFAULT_CATEGORIES: {parser: s => s.split(' '), defaultValue: ['foo', 'bar']},
+  }, {overrides: {DB_PORT: '5432'}});
+  expect(settings.DEFAULT_CATEGORIES).toEqual(['foo', 'bar']);  
+});
